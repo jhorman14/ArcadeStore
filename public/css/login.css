@@ -1,0 +1,154 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #121212;
+    color: #fff;
+}
+
+/* Contenedor principal */
+.login-container {
+    background-color: #1c1c1c;
+    padding: 40px; /* Reducido el padding */
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px; /* Ajustado el ancho máximo */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+    width: 50px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Formulario */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 14px;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+input[type="tel"],
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #2b2b2b;
+    color: #fff;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+}
+
+.password-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* Botón de inicio de sesión */
+.login-button {
+    padding: 12px 20px; /* Ajustado el padding */
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #333; /* Cambiado el color de fondo */
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%; /* Botón ocupa todo el ancho */
+}
+
+.login-button:hover {
+    background-color: #555;
+}
+
+/* Enlace de recuperación de contraseña */
+.forgot-password {
+    text-align: right;
+    font-size: 12px;
+    color: #bbb;
+    margin-bottom: 15px;
+    display: block; /* Asegura que el enlace ocupe toda la línea */
+}
+
+/* Otras opciones de inicio de sesión */
+.or {
+    margin: 20px 0 10px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.social-login {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.social-btn {
+    background-color: #333;
+    border: none;
+    color: #fff;
+    padding: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.social-btn:hover {
+    background-color: #555;
+}
+
+/* Estilos específicos para cada botón social */
+.xbox { background-color: #107c10; }
+.playstation { background-color: #003087; }
+.nintendo { background-color: #e60012; }
+.steam { background-color: #1b2838; }
+.facebook { background-color: #1877f2; }
+.google { background-color: #db4437; }
+.apple { background-color: #333333; }
+.lego { background-color: #ffcb05; }
+
+/* Crear cuenta y política de privacidad */
+.create-account,
+.privacy-policy {
+    display: block;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #bbb;
+}
