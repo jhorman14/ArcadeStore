@@ -3,24 +3,29 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as AuthenticatableBase;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Authenticatable
+
+class User extends AuthenticatableBase implements Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $table = 'users';
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    public $timestamps = true;
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'nick',
+        'telefono',
     ];
 
     /**
@@ -44,5 +49,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function pedidos(): HasMany
+    {
+        return $this->hasMany(Pedido::class, 'id_usuario');
+    }
+
+    public function convenios(): HasMany
+    {
+        return $this->hasMany(Convenio::class, 'id_usuario');
+    }
+
+    public function ventas(): HasMany
+    {
+        return $this->hasMany(Venta::class, 'id_usuario');
     }
 }
