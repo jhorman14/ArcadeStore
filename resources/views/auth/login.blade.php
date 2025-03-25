@@ -11,7 +11,8 @@
             @csrf
 
             <label for="email">{{ __('Direccion de correo electrónico') }}</label>
-            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email"
+                value="{{ old('email') }}" required autocomplete="email" autofocus>
             @error('email')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
@@ -20,15 +21,18 @@
 
             <label for="password">{{ __('Contraseña') }}</label>
             <div class="password-container">
-                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-                <span class="toggle-password" id="togglePassword">👁️</span> </div>
+                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
+                    name="password" required autocomplete="current-password">
+                <span class="toggle-password" id="togglePassword">👁️</span>
+            </div>
             @error('password')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
 
-            <a href="{{ route('password.request') }}" class="forgot-password">{{ __('¿Has olvidado la contraseña?') }}</a>
+            <a href="{{ route('password.request') }}"
+                class="forgot-password">{{ __('¿Has olvidado la contraseña?') }}</a>
 
             <button type="submit" class="login-button">
                 {{ __('Iniciar sesión') }}
@@ -43,7 +47,7 @@
                 <button class="social-btn apple"><i class="fab fa-apple"></i></button>
             </div>
         </form>
-        <a href="Registro.html" class="create-account">Crear una cuenta</a>
+        <a href="{{ route('register') }}" class="create-account">Crear una cuenta</a>
         <a href="#" class="privacy-policy">Política de privacidad</a>
     </div>
 </div>

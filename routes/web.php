@@ -42,7 +42,4 @@ Route::resource('juegos', JuegoController::class); // Puedes decidir si requiere
 Route::resource('inventarios', InventarioController::class)->middleware('auth');
 Route::resource('categorias', CategoriaController::class); // Puedes decidir si requiere autenticación
 
-// Rutas de administración (ejemplo, necesitarás ajustar el middleware)
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    Route::resource('users', Admin\UserController::class)->except(['show']);
-});
+
