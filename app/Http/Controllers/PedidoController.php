@@ -3,85 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\PedidoRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class PedidoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): View
     {
-        $pedidos = Pedido::all();
-        return view('pedidos.index', compact('pedidos'));
+        $pedidos = Pedido::paginate();
+
+        return view('pedido.index', compact('pedidos'))
+            ->with('i', ($request->input('page', 1) - 1) * $pedidos->perPage());
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
-        return view('pedidos.create');
+        $pedido = new Pedido();
+
+        return view('pedido.create', compact('pedido'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PedidoRequest $request): RedirectResponse
     {
-        $request->validate([
-            'fecha_pedido' => 'required|date',
-            'estado_pedido' => 'required|string|max:50',
-            'id_usuario' => 'required|exists:users,id',
-            'id_juego' => 'required|exists:juegos,id_juego',
-        ]);
+        Pedido::create($request->validated());
 
-        Pedido::create($request->all());
-
-        return redirect()->route('pedidos.index')->with('success', 'Pedido creado exitosamente.');
+        return Redirect::route('pedidos.index')
+            ->with('success', 'Pedido created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Pedido $pedido)
+    public function show($id): View
     {
-        $pedido->load('usuario', 'juego', 'pago');
-        return view('pedidos.show', compact('pedido'));
+        $pedido = Pedido::find($id);
+
+        return view('pedido.show', compact('pedido'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pedido $pedido)
+    public function edit($id): View
     {
-        return view('pedidos.edit', compact('pedido'));
+        $pedido = Pedido::find($id);
+
+        return view('pedido.edit', compact('pedido'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pedido $pedido)
+    public function update(PedidoRequest $request, Pedido $pedido): RedirectResponse
     {
-        $request->validate([
-            'fecha_pedido' => 'required|date',
-            'estado_pedido' => 'required|string|max:50',
-            'id_usuario' => 'required|exists:users,id',
-            'id_juego' => 'required|exists:juegos,id_juego',
-        ]);
+        $pedido->update($request->validated());
 
-        $pedido->update($request->all());
-
-        return redirect()->route('pedidos.index')->with('success', 'Pedido actualizado exitosamente.');
+        return Redirect::route('pedidos.index')
+            ->with('success', 'Pedido updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pedido $pedido)
+    public function destroy($id): RedirectResponse
     {
-        $pedido->delete();
+        Pedido::find($id)->delete();
 
-        return redirect()->route('pedidos.index')->with('success', 'Pedido eliminado exitosamente.');
+        return Redirect::route('pedidos.index')
+            ->with('success', 'Pedido deleted successfully');
     }
 }

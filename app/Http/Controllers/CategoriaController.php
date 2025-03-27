@@ -3,81 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\CategoriaRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class CategoriaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): View
     {
-        $categorias = Categoria::all();
-        return view('categorias.index', compact('categorias'));
+        $categorias = Categoria::paginate();
+
+        return view('categoria.index', compact('categorias'))
+            ->with('i', ($request->input('page', 1) - 1) * $categorias->perPage());
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
-        return view('categorias.create');
+        $categoria = new Categoria();
+
+        return view('categoria.create', compact('categoria'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoriaRequest $request): RedirectResponse
     {
-        $request->validate([
-            'nombre_categoria' => 'required|string|max:50|unique:categorias,nombre_categoria',
-            'descripcion' => 'nullable|string|max:200',
-        ]);
+        Categoria::create($request->validated());
 
-        Categoria::create($request->all());
-
-        return redirect()->route('categorias.index')->with('success', 'Categoría creada exitosamente.');
+        return Redirect::route('categorias.index')
+            ->with('success', 'Categoria created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Categoria $categoria)
+    public function show($id): View
     {
-        $categoria->load('juegos');
-        return view('categorias.show', compact('categoria'));
+        $categoria = Categoria::find($id);
+
+        return view('categoria.show', compact('categoria'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Categoria $categoria)
+    public function edit($id): View
     {
-        return view('categorias.edit', compact('categoria'));
+        $categoria = Categoria::find($id);
+
+        return view('categoria.edit', compact('categoria'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Categoria $categoria)
+    public function update(CategoriaRequest $request, Categoria $categoria): RedirectResponse
     {
-        $request->validate([
-            'nombre_categoria' => 'required|string|max:50|unique:categorias,nombre_categoria,' . $categoria->id_categoria,
-            'descripcion' => 'nullable|string|max:200',
-        ]);
+        $categoria->update($request->validated());
 
-        $categoria->update($request->all());
-
-        return redirect()->route('categorias.index')->with('success', 'Categoría actualizada exitosamente.');
+        return Redirect::route('categorias.index')
+            ->with('success', 'Categoria updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Categoria $categoria)
+    public function destroy($id): RedirectResponse
     {
-        $categoria->delete();
+        Categoria::find($id)->delete();
 
-        return redirect()->route('categorias.index')->with('success', 'Categoría eliminada exitosamente.');
+        return Redirect::route('categorias.index')
+            ->with('success', 'Categoria deleted successfully');
     }
 }

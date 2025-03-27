@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->text('requisitos_minimos')->nullable();
             $table->text('requisitos_recomendados')->nullable();
+            $table->string('imagen')->nullable(); // Agrega el campo para la imagen
             $table->unsignedBigInteger('id_categoria');
             $table->timestamps();
 

@@ -3,81 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inventario;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\InventarioRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class InventarioController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): View
     {
-        $inventarios = Inventario::all();
-        return view('inventarios.index', compact('inventarios'));
+        $inventarios = Inventario::paginate();
+
+        return view('inventario.index', compact('inventarios'))
+            ->with('i', ($request->input('page', 1) - 1) * $inventarios->perPage());
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
-        return view('inventarios.create');
+        $inventario = new Inventario();
+
+        return view('inventario.create', compact('inventario'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(InventarioRequest $request): RedirectResponse
     {
-        $request->validate([
-            'stock' => 'required|integer|min:0',
-            'id_juego' => 'required|exists:juegos,id_juego',
-        ]);
+        Inventario::create($request->validated());
 
-        Inventario::create($request->all());
-
-        return redirect()->route('inventarios.index')->with('success', 'Inventario creado exitosamente.');
+        return Redirect::route('inventarios.index')
+            ->with('success', 'Inventario created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Inventario $inventario)
+    public function show($id): View
     {
-        $inventario->load('juego');
-        return view('inventarios.show', compact('inventario'));
+        $inventario = Inventario::find($id);
+
+        return view('inventario.show', compact('inventario'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Inventario $inventario)
+    public function edit($id): View
     {
-        return view('inventarios.edit', compact('inventario'));
+        $inventario = Inventario::find($id);
+
+        return view('inventario.edit', compact('inventario'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Inventario $inventario)
+    public function update(InventarioRequest $request, Inventario $inventario): RedirectResponse
     {
-        $request->validate([
-            'stock' => 'required|integer|min:0',
-            'id_juego' => 'required|exists:juegos,id_juego',
-        ]);
+        $inventario->update($request->validated());
 
-        $inventario->update($request->all());
-
-        return redirect()->route('inventarios.index')->with('success', 'Inventario actualizado exitosamente.');
+        return Redirect::route('inventarios.index')
+            ->with('success', 'Inventario updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Inventario $inventario)
+    public function destroy($id): RedirectResponse
     {
-        $inventario->delete();
+        Inventario::find($id)->delete();
 
-        return redirect()->route('inventarios.index')->with('success', 'Inventario eliminado exitosamente.');
+        return Redirect::route('inventarios.index')
+            ->with('success', 'Inventario deleted successfully');
     }
 }

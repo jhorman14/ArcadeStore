@@ -3,83 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pago;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\PagoRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class PagoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): View
     {
-        $pagos = Pago::all();
-        return view('pagos.index', compact('pagos'));
+        $pagos = Pago::paginate();
+
+        return view('pago.index', compact('pagos'))
+            ->with('i', ($request->input('page', 1) - 1) * $pagos->perPage());
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
-        return view('pagos.create');
+        $pago = new Pago();
+
+        return view('pago.create', compact('pago'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PagoRequest $request): RedirectResponse
     {
-        $request->validate([
-            'metodo_de_pago' => 'required|string|max:11',
-            'total' => 'required|integer',
-            'id_pedido' => 'required|exists:pedidos,id_pedido',
-        ]);
+        Pago::create($request->validated());
 
-        Pago::create($request->all());
-
-        return redirect()->route('pagos.index')->with('success', 'Pago creado exitosamente.');
+        return Redirect::route('pagos.index')
+            ->with('success', 'Pago created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Pago $pago)
+    public function show($id): View
     {
-        $pago->load('pedido');
-        return view('pagos.show', compact('pago'));
+        $pago = Pago::find($id);
+
+        return view('pago.show', compact('pago'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pago $pago)
+    public function edit($id): View
     {
-        return view('pagos.edit', compact('pago'));
+        $pago = Pago::find($id);
+
+        return view('pago.edit', compact('pago'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pago $pago)
+    public function update(PagoRequest $request, Pago $pago): RedirectResponse
     {
-        $request->validate([
-            'metodo_de_pago' => 'required|string|max:11',
-            'total' => 'required|integer',
-            'id_pedido' => 'required|exists:pedidos,id_pedido',
-        ]);
+        $pago->update($request->validated());
 
-        $pago->update($request->all());
-
-        return redirect()->route('pagos.index')->with('success', 'Pago actualizado exitosamente.');
+        return Redirect::route('pagos.index')
+            ->with('success', 'Pago updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pago $pago)
+    public function destroy($id): RedirectResponse
     {
-        $pago->delete();
+        Pago::find($id)->delete();
 
-        return redirect()->route('pagos.index')->with('success', 'Pago eliminado exitosamente.');
+        return Redirect::route('pagos.index')
+            ->with('success', 'Pago deleted successfully');
     }
 }

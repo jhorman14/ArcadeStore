@@ -9,6 +9,7 @@ use App\Http\Controllers\IntercambioController;
 use App\Http\Controllers\JuegoController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\Admin\JuegoController as AdminJuegoController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,9 +17,12 @@ Route::get('/', function () {
     return view('tienda.index');
 });
 
-Route::get('/biblioteca', function () {
+Route::get('/juegosDisp', function () {
     return view('tienda.juegos');
 });
+
+Route::get('/juegosDisp', [JuegoController::class, 'index'])->name('juegosDisp');
+Route::get('/juegosDisp/{juego}', [JuegoController::class, 'show'])->name('tienda.show');
 
 Auth::routes();
 
@@ -35,11 +39,17 @@ Route::middleware('auth')->group(function () {
 // Rutas para los recursos (CRUD)
 Route::resource('pedidos', PedidoController::class)->middleware('auth');
 Route::resource('pagos', PagoController::class)->middleware('auth');
-Route::resource('convenios', ConvenioController::class)->middleware('auth');
+
 Route::resource('ventas', VentaController::class)->middleware('auth');
 Route::resource('intercambios', IntercambioController::class)->middleware('auth');
-Route::resource('juegos', JuegoController::class); // Puedes decidir si requiere autenticación
+
 Route::resource('inventarios', InventarioController::class)->middleware('auth');
 Route::resource('categorias', CategoriaController::class); // Puedes decidir si requiere autenticación
 
-
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::resource('juegos', AdminJuegoController::class);
+    Route::get('/dashboard', function () {
+        return view('tienda.dashboard');
+    });
+    Route::resource('convenios', ConvenioController::class);
+});

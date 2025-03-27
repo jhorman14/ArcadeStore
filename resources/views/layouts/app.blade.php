@@ -50,7 +50,7 @@
                 </li>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ url('/biblioteca') }}">Juegos </a>
+                  <a class="nav-link" href="{{ url('/juegosDisp') }}">Juegos </a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="#">Free to play</a>
