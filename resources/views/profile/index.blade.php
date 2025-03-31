@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Personas
+    Users
 @endsection
 
 @section('content')
@@ -13,11 +13,11 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Personas') }}
+                                {{ __('Users') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('personas.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
                                   {{ __('Create New') }}
                                 </a>
                               </div>
@@ -36,26 +36,32 @@
                                     <tr>
                                         <th>No</th>
                                         
-									<th >Nombre</th>
+									<th >Name</th>
 									<th >Email</th>
+									<th >Nick</th>
 									<th >Telefono</th>
+									<th >Is Active</th>
+									<th >Role</th>
 
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($personas as $persona)
+                                    @foreach ($users as $user)
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-										<td >{{ $persona->nombre }}</td>
-										<td >{{ $persona->email }}</td>
-										<td >{{ $persona->telefono }}</td>
+										<td >{{ $user->name }}</td>
+										<td >{{ $user->email }}</td>
+										<td >{{ $user->nick }}</td>
+										<td >{{ $user->telefono }}</td>
+										<td >{{ $user->is_active }}</td>
+										<td >{{ $user->role }}</td>
 
                                             <td>
-                                                <form action="{{ route('personas.destroy', $persona->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('personas.show', $persona->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('personas.edit', $persona->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary " href="{{ route('users.show', $user->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('users.edit', $user->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
@@ -68,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                {!! $personas->withQueryString()->links() !!}
+                {!! $users->withQueryString()->links() !!}
             </div>
         </div>
     </div>

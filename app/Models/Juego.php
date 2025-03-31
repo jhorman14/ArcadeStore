@@ -37,7 +37,7 @@ class Juego extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['titulo', 'precio', 'descripcion', 'requisitos_minimos', 'requisitos_recomendados', 'id_categoria'];
+    protected $fillable = ['titulo', 'precio', 'descripcion', 'requisitos_minimos', 'requisitos_recomendados', 'id_categoria', 'imagen'];
 
 
     /**

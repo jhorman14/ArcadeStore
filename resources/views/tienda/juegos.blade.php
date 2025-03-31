@@ -3,18 +3,7 @@
 
 <link href="{{ asset('css/juegos.css') }}" rel="stylesheet" />
 
-    <section class=" slider_section position-relative">
-        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
-            </ol>
-            <div class="carousel-inner">
-                </div>
-        </div>
-    </section>
+   
     <main>
         <br><br><br>
         <section class="juegos">
@@ -25,7 +14,10 @@
                         <img src="{{ asset('images/' . $juego->imagen) }}" alt="{{ $juego->titulo }}">
                         <h3>{{ $juego->titulo }}</h3>
                         <p>{{ $juego->descripcion }}</p>
-                        <button>Comprar</button>
+                        <a href="{{ route('tienda.show', $juego->id) }}">
+                             <button>Comprar</button>
+                        </a>
+                        
                     </div>
                 @endforeach
             </div>

@@ -32,11 +32,8 @@
                       Frank Woods, veterano de Black Ops, y su equipo se ven perseguidos por la organización militar que los creó.
                     </p>
                     <div class="btn-box">
-                      <a href="" class="btn-1">
-                        Compra ahora
-                      </a>
-                      <a href="" class="btn-2">
-                        Mas informacion
+                      <a href="{{ url('/juegosDisp') }}" class="btn-1">
+                        ver mas
                       </a>
                     </div>
                   </div>
@@ -68,11 +65,8 @@
                       y de jugabilidad que elevarán la franquicia a otro nivel.
                     </p>
                     <div class="btn-box">
-                      <a href="" class="btn-1">
-                        Compra ahora
-                      </a>
-                      <a href="" class="btn-2">
-                        Mas informacion
+                      <a href="{{ url('/juegosDisp') }}" class="btn-1">
+                        ver mas
                       </a>
                     </div>
                   </div>
@@ -104,11 +98,8 @@
                       Rey Mono, un personaje mítico con habilidades sobrenaturales.
                     </p>
                     <div class="btn-box">
-                      <a href="" class="btn-1">
-                        Compra ahora
-                      </a>
-                      <a href="" class="btn-2">
-                        Mas informacion
+                      <a href="{{ url('/juegosDisp') }}" class="btn-1">
+                        ver mas
                       </a>
                     </div>
                   </div>
@@ -143,11 +134,8 @@
 
                     </p>
                     <div class="btn-box">
-                      <a href="" class="btn-1">
-                        Compra ahora
-                      </a>
-                      <a href="#" class="btn-2">
-                        Mas informacion
+                      <a href="{{ url('/juegosDisp') }}" class="btn-1">
+                        ver mas
                       </a>
                     </div>
                   </div>
@@ -175,7 +163,7 @@
       <div class="row">
         <div class="col-md-6">
           <div class="img-box">
-            <img src="images/GTAV.png" alt="">
+            <img src="images/GTA.png" alt="">
           </div>
         </div>
         <div class="col-md-6">
@@ -193,8 +181,8 @@
               implacable en la que no pueden confiar en nadie. Y mucho menos los unos en los otros.
             </p>
             <div>
-              <a href="">
-                Mas informacion
+              <a href="{{ url('/juegosDisp') }}">
+                ver mas
               </a>
             </div>
           <!--  <div>
@@ -233,8 +221,8 @@
               acomoden a tu estilo de juego.
             </p>
             <div>
-              <a href="">
-                Mas informacion
+              <a href="{{ url('/juegosDisp') }}">
+                ver mas
               </a>
             </div>
           <!--  <div>
@@ -281,8 +269,8 @@
                 desaparecida madre e intenta detener el reino de terror de su padre Kazuya.
               </p>
               <div>
-                <a href="">
-                  Mas informacion
+                <a href="{{ url('/juegosDisp') }}">
+                  ver mas
                 </a>
               </div>
             <!--  <div>

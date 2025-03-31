@@ -10,13 +10,13 @@ use App\Http\Controllers\JuegoController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\Admin\JuegoController as AdminJuegoController;
+use App\Http\Controllers\Admin\UserController as AdminUserController; // Agrega esta línea
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('tienda.index');
 });
-
 Route::get('/juegosDisp', function () {
     return view('tienda.juegos');
 });
@@ -26,10 +26,9 @@ Route::get('/juegosDisp/{juego}', [JuegoController::class, 'show'])->name('tiend
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 // Rutas para el perfil de usuario (protegidas)
 Route::middleware('auth')->group(function () {
+    Route::get('/pedidos/create/{juego_id}', [PedidoController::class, 'create'])->name('pedidos.create');
     Route::get('/profile/{id}', [UserController::class, 'show'])->name('profile.show');
     Route::get('/profile/{id}/edit', [UserController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/{id}', [UserController::class, 'updateProfile'])->name('profile.update');
@@ -49,7 +48,27 @@ Route::resource('categorias', CategoriaController::class); // Puedes decidir si 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('juegos', AdminJuegoController::class);
     Route::get('/dashboard', function () {
-        return view('tienda.dashboard');
-    });
+        return view('tienda.dashboard');})->name('admin.dashboard'); // Asigna un nombre a la ruta del dashboard
     Route::resource('convenios', ConvenioController::class);
+    Route::resource('users', AdminUserController::class); // Agrega las rutas para el controlador de usuarios de admin
+});
+
+// Rutas para admin/juegos - Usando el controlador AdminJuegoController
+Route::prefix('admin/juegos')->name('admin.juegos.')->group(function () {
+    Route::get('/', [AdminJuegoController::class, 'index'])->name('index');
+    Route::get('/crear', [AdminJuegoController::class, 'create'])->name('crear');
+    Route::post('/store', [AdminJuegoController::class, 'store'])->name('store');
+    Route::get('/{juego}/editar', [AdminJuegoController::class, 'edit'])->name('editar');
+    Route::put('/{juego}', [AdminJuegoController::class, 'update'])->name('update');
+    Route::delete('/juegos/{juego}', [AdminJuegoController::class, 'destroy'])->name('juegos.destroy');
+});
+
+// Rutas para admin/users - Usando el controlador AdminUserController
+Route::prefix('admin/users')->name('admin.users.')->group(function () {
+    Route::get('/', [AdminUserController::class, 'index'])->name('index');
+    Route::get('/create', [AdminUserController::class, 'create'])->name('create');
+    Route::post('/', [AdminUserController::class, 'store'])->name('store');
+    Route::get('/{user}/edit', [AdminUserController::class, 'edit'])->name('edit');
+    Route::put('/{user}', [AdminUserController::class, 'update'])->name('update');
+    Route::delete('/{user}', [AdminUserController::class, 'destroy'])->name('destroy');
 });

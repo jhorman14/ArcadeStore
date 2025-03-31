@@ -42,20 +42,6 @@ class CategoriaController extends Controller
         return Redirect::route('categorias.index')
             ->with('success', 'Categoria created successfully.');
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id): View
-    {
-        $categoria = Categoria::find($id);
-
-        return view('categoria.show', compact('categoria'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id): View
     {
         $categoria = Categoria::find($id);

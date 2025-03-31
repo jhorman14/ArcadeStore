@@ -17,10 +17,10 @@
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('juegos.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
-                                </a>
-                              </div>
+                                 <a href="{{ route('juegos.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                   {{ __('Create New') }}
+                                 </a>
+                             </div>
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
@@ -35,32 +35,34 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >Titulo</th>
-									<th >Precio</th>
-									<th >Descripcion</th>
-									<th >Requisitos Minimos</th>
-									<th >Requisitos Recomendados</th>
-									<th >Id Categoria</th>
+
+                                        <th >Titulo</th>
+                                        <th >Precio</th>
+                                        <th >Descripcion</th>
+                                        <th >Requisitos Minimos</th>
+                                        <th >Requisitos Recomendados</th>
+                                        <th >Id Categoria</th>
 
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $i = 0;
+                                    @endphp
                                     @foreach ($juegos as $juego)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $juego->titulo }}</td>
-										<td >{{ $juego->precio }}</td>
-										<td >{{ $juego->descripcion }}</td>
-										<td >{{ $juego->requisitos_minimos }}</td>
-										<td >{{ $juego->requisitos_recomendados }}</td>
-										<td >{{ $juego->id_categoria }}</td>
+
+                                            <td >{{ $juego->titulo }}</td>
+                                            <td >{{ $juego->precio }}</td>
+                                            <td >{{ $juego->descripcion }}</td>
+                                            <td >{{ $juego->requisitos_minimos }}</td>
+                                            <td >{{ $juego->requisitos_recomendados }}</td>
+                                            <td >{{ $juego->id_categoria }}</td>
 
                                             <td>
                                                 <form action="{{ route('juegos.destroy', $juego->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('juegos.show', $juego->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
                                                     <a class="btn btn-sm btn-success" href="{{ route('juegos.edit', $juego->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
                                                     @csrf
                                                     @method('DELETE')

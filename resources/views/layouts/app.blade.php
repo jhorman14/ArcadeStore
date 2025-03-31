@@ -96,6 +96,11 @@
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Cerrar sesion') }}
                                     </a>
+                                    @if (Auth::user()->role === 'admin')
+                                      <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                        {{ __('Dashboard') }}
+                                      </a>
+                                        @endif
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf

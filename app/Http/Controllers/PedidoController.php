@@ -3,82 +3,76 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Pago;
+use App\Models\Juego; // Asegúrate de importar el modelo Juego
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\PedidoRequest;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 
 class PedidoController extends Controller
 {
+    public function create($juego_id = null)
+    {
+        $juegos = Juego::all();
+        return view('pedido.create', compact('juegos', 'juego_id'));
+    }
+    /**
+     * Store a newly created resource in storage (simulando pago exitoso y creando pedido).
+     */
+    public function store(PedidoRequest $request)
+{
+    // Simulación de pago exitoso
+    $pagoExitoso = true;
+
+    if ($pagoExitoso) {
+        DB::beginTransaction();
+        try {
+            $pago = Pago::create([
+                'total' => $request->total, // Obtén el total del request
+                'id_pedido' => null,
+                'metodo_de_pago' => $request->metodo_de_pago,
+            ]);
+
+            $pedido = Pedido::create([
+                'id_usuario' => auth()->id(),
+                'fechapedido' => now(),
+                'estadopedido' => 'Pendiente',
+                'Id_juego' => $request->id_juego,
+                'total' => $request->total, // Guarda también el total en la tabla de pedidos (opcional pero útil)
+            ]);
+
+            $pago->update(['id_pedido' => $pedido->id_pedido]);
+
+            DB::commit();
+
+            return redirect()->route('pedidos.show', $pedido->id_pedido)->with('success', 'Pedido creado exitosamente.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al crear pedido y pago (simulado): ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Hubo un error al crear el pedido.']);
+        }
+    } else {
+        return back()->withErrors(['error' => 'El pago simulado no fue exitoso.']);
+    }
+}
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index()
     {
-        $pedidos = Pedido::paginate();
-
-        return view('pedido.index', compact('pedidos'))
-            ->with('i', ($request->input('page', 1) - 1) * $pedidos->perPage());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): View
-    {
-        $pedido = new Pedido();
-
-        return view('pedido.create', compact('pedido'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(PedidoRequest $request): RedirectResponse
-    {
-        Pedido::create($request->validated());
-
-        return Redirect::route('pedidos.index')
-            ->with('success', 'Pedido created successfully.');
+        $pedidos = auth()->user()->pedidos()->paginate(10);
+        return view('pedido.index', compact('pedidos'));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id): View
+    public function show(Pedido $pedido)
     {
-        $pedido = Pedido::find($id);
-
         return view('pedido.show', compact('pedido'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id): View
-    {
-        $pedido = Pedido::find($id);
-
-        return view('pedido.edit', compact('pedido'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(PedidoRequest $request, Pedido $pedido): RedirectResponse
-    {
-        $pedido->update($request->validated());
-
-        return Redirect::route('pedidos.index')
-            ->with('success', 'Pedido updated successfully');
-    }
-
-    public function destroy($id): RedirectResponse
-    {
-        Pedido::find($id)->delete();
-
-        return Redirect::route('pedidos.index')
-            ->with('success', 'Pedido deleted successfully');
-    }
+    // Puedes agregar otros métodos como edit, update, destroy si los necesitas para la gestión de pedidos
 }

@@ -26,6 +26,7 @@ class User extends AuthenticatableBase implements Authenticatable
         'password',
         'nick',
         'telefono',
+        'role',
     ];
 
     /**

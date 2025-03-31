@@ -19,7 +19,7 @@ class UserController extends Controller
         // Verificar si el usuario autenticado es el mismo que se está viendo
         if ($user->id != $id) {
             // Puedes redirigir o mostrar un error si no coincide
-            return redirect()->route('home')->with('error', 'No tienes permiso para ver este perfil.');
+            return redirect()->route('/')->with('error', 'No tienes permiso para ver este perfil.');
         }
 
         // Lógica para mostrar el perfil del usuario
@@ -55,8 +55,9 @@ class UserController extends Controller
         // Verificar si el usuario autenticado es el mismo que se está actualizando
         if ($user->id != $id) {
             // Puedes redirigir o mostrar un error si no coincide
-            return redirect()->route('home')->with('error', 'No tienes permiso para editar este perfil.');
+            return redirect()->route('/')->with('error', 'No tienes permiso para editar este perfil.');
         }
+        
 
         $request->validate([
             // Define tus reglas de validación para la actualización del perfil aquí

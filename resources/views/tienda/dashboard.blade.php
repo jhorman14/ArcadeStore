@@ -1,20 +1,19 @@
 @extends('layouts.app')
 @section('content')
+
 <link href="{{ asset('css/Dashboard.css') }}" rel="stylesheet" />
-<link href="{{ asset('css/stylef.css') }}" rel="stylesheet" />
-<body>
     <div class="dashboard">
     <!--barra lateral-->
     <div class="sidebar">
 
         <h2>ARCADE_STORE</h2>
         <ul>
-            <li><a href="{{ url('/dashboard') }}">Inicio</a></li>
-            <li><a href="{{ url('/juegos') }}">juegos</a></li>
-            <li><a href="{{ url('/proveedores') }}">proveedores</a></li>
-            <li><a href="{{ url('/intercambios') }}">intercambios</a></li>
-            <li><a href="{{ url('/categorias') }}">categorias</a></li>
-            <li><a href="{{ url('/ventas') }}">ventas</a></li>
+            <li><a href="{{ url('admin/dashboard') }}">Inicio</a></li>
+            <li><a href="{{ url('admin/juegos') }}">juegos</a></li>
+            <li><a href="{{ url('admin/users') }}">usuarios</a></li>
+            <li><a href="{{ url('categorias') }}">categorias</a></li>
+            <li><a href="{{ url('admin/intercambios') }}">intercambios</a></li>
+            <li><a href="{{ url('admin/ventas') }}">ventas</a></li>
             <li><a href=""></a></li>
         </ul>
     </div>

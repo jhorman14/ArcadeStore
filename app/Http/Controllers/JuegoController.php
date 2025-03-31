@@ -21,6 +21,6 @@ class JuegoController extends Controller
     {
         $juego = Juego::find($id);
 
-        return view('juegos.show', compact('juego'));
+        return view('tienda.show', compact('juego'));
     }
 }

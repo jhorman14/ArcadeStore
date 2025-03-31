@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    {{ $persona->name ?? __('Show') . " " . __('Persona') }}
+    {{ $user->name ?? __('Show') . " " . __('User') }}
 @endsection
 
 @section('content')
@@ -11,26 +11,38 @@
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Persona</span>
+                            <span class="card-title">{{ __('Show') }} User</span>
                         </div>
                         <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('personas.index') }}"> {{ __('Back') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('users.index') }}"> {{ __('Back') }}</a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
                         
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Nombre:</strong>
-                                    {{ $persona->nombre }}
+                                    <strong>Name:</strong>
+                                    {{ $user->name }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
                                     <strong>Email:</strong>
-                                    {{ $persona->email }}
+                                    {{ $user->email }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Nick:</strong>
+                                    {{ $user->nick }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
                                     <strong>Telefono:</strong>
-                                    {{ $persona->telefono }}
+                                    {{ $user->telefono }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Is Active:</strong>
+                                    {{ $user->is_active }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Role:</strong>
+                                    {{ $user->role }}
                                 </div>
 
                     </div>
