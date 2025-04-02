@@ -3,87 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Convenio;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\ConvenioRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class ConvenioController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): View
     {
-        $convenios = Convenio::all();
-        return view('convenios.index', compact('convenios'));
+        $convenios = Convenio::paginate();
+
+        return view('convenio.index', compact('convenios'))
+            ->with('i', ($request->input('page', 1) - 1) * $convenios->perPage());
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
-        return view('convenios.create');
+        $convenio = new Convenio();
+
+        return view('convenio.create', compact('convenio'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ConvenioRequest $request): RedirectResponse
     {
-        $request->validate([
-            'descripcion' => 'required|string|max:200',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'nullable|date|after:fecha_inicio',
-            'id_usuario' => 'required|exists:users,id',
-            'id_juego' => 'required|exists:juegos,id_juego',
-        ]);
+        Convenio::create($request->validated());
 
-        Convenio::create($request->all());
-
-        return redirect()->route('convenios.index')->with('success', 'Convenio creado exitosamente.');
+        return Redirect::route('convenios.index')
+            ->with('success', 'Convenio created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Convenio $convenio)
+    public function show($id): View
     {
-        $convenio->load('usuario', 'juego');
-        return view('convenios.show', compact('convenio'));
+        $convenio = Convenio::find($id);
+
+        return view('convenio.show', compact('convenio'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Convenio $convenio)
+    public function edit($id): View
     {
-        return view('convenios.edit', compact('convenio'));
+        $convenio = Convenio::find($id);
+
+        return view('convenio.edit', compact('convenio'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Convenio $convenio)
+    public function update(ConvenioRequest $request, Convenio $convenio): RedirectResponse
     {
-        $request->validate([
-            'descripcion' => 'required|string|max:200',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'nullable|date|after:fecha_inicio',
-            'id_usuario' => 'required|exists:users,id',
-            'id_juego' => 'required|exists:juegos,id_juego',
-        ]);
+        $convenio->update($request->validated());
 
-        $convenio->update($request->all());
-
-        return redirect()->route('convenios.index')->with('success', 'Convenio actualizado exitosamente.');
+        return Redirect::route('convenios.index')
+            ->with('success', 'Convenio updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Convenio $convenio)
+    public function destroy($id): RedirectResponse
     {
-        $convenio->delete();
+        Convenio::find($id)->delete();
 
-        return redirect()->route('convenios.index')->with('success', 'Convenio eliminado exitosamente.');
+        return Redirect::route('convenios.index')
+            ->with('success', 'Convenio deleted successfully');
     }
 }

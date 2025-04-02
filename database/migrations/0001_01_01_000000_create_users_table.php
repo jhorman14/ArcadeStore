@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('nick')->unique()->nullable(); // Campo para el nick, permitiendo nulos
             $table->string('telefono', 10)->nullable(); // Campo para el teléfono, permitiendo nulos
+            $table->boolean('is_active')->default(true);
+            $table->string('role')->default('user');
             $table->rememberToken();
             $table->timestamps();
         });

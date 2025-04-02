@@ -3,83 +3,80 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pago;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\PagoRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class PagoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource (para administradores).
      */
-    public function index()
+    public function index(Request $request): View
     {
-        $pagos = Pago::all();
-        return view('pagos.index', compact('pagos'));
+        $pagos = Pago::paginate();
+
+        return view('admin.pagos.index', compact('pagos')) // Asegúrate de tener una vista para administradores
+            ->with('i', ($request->input('page', 1) - 1) * $pagos->perPage());
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new resource (para administradores).
      */
-    public function create()
+    public function create(): View
     {
-        return view('pagos.create');
+        $pago = new Pago();
+        return view('admin.pagos.create', compact('pago'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage (para administradores).
      */
-    public function store(Request $request)
+    public function store(PagoRequest $request): RedirectResponse
     {
-        $request->validate([
-            'metodo_de_pago' => 'required|string|max:11',
-            'total' => 'required|integer',
-            'id_pedido' => 'required|exists:pedidos,id_pedido',
-        ]);
+        Pago::create($request->validated());
 
-        Pago::create($request->all());
-
-        return redirect()->route('pagos.index')->with('success', 'Pago creado exitosamente.');
+        return Redirect::route('admin.pagos.index')
+            ->with('success', 'Pago creado successfully.');
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource (para administradores).
      */
-    public function show(Pago $pago)
+    public function show(Pago $pago): View
     {
-        $pago->load('pedido');
-        return view('pagos.show', compact('pago'));
+        return view('admin.pagos.show', compact('pago'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified resource (para administradores).
      */
-    public function edit(Pago $pago)
+    public function edit(Pago $pago): View
     {
-        return view('pagos.edit', compact('pago'));
+        return view('admin.pagos.edit', compact('pago'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage (para administradores).
      */
-    public function update(Request $request, Pago $pago)
+    public function update(PagoRequest $request, Pago $pago): RedirectResponse
     {
-        $request->validate([
-            'metodo_de_pago' => 'required|string|max:11',
-            'total' => 'required|integer',
-            'id_pedido' => 'required|exists:pedidos,id_pedido',
-        ]);
+        $pago->update($request->validated());
 
-        $pago->update($request->all());
-
-        return redirect()->route('pagos.index')->with('success', 'Pago actualizado exitosamente.');
+        return Redirect::route('admin.pagos.index')
+            ->with('success', 'Pago updated successfully');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage (para administradores).
      */
-    public function destroy(Pago $pago)
+    public function destroy(Pago $pago): RedirectResponse
     {
         $pago->delete();
 
-        return redirect()->route('pagos.index')->with('success', 'Pago eliminado exitosamente.');
+        return Redirect::route('admin.pagos.index')
+            ->with('success', 'Pago deleted successfully');
     }
 }

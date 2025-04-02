@@ -2,26 +2,41 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Class Pago
+ *
+ * @property $id
+ * @property $metodo_de_pago
+ * @property $total
+ * @property $id_pedido
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property Pedido $pedido
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Pago extends Model
 {
-    use HasFactory;
+    
+    protected $perPage = 20;
 
-    protected $primaryKey = 'id';
-    public $incrementing = true;
-    public $timestamps = true;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['total', 'id_pedido', '@metodo de_pago'];
 
-    protected $fillable = [
-        'metodo_de_pago',
-        'total',
-        'id_pedido',
-    ];
 
-    public function pedido(): BelongsTo
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function pedido()
     {
-        return $this->belongsTo(Pedido::class, 'id_pedido');
+        return $this->belongsTo(\App\Models\Pedido::class, 'id_pedido', 'id');
     }
+    
 }

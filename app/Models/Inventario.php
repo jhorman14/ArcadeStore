@@ -2,25 +2,40 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Class Inventario
+ *
+ * @property $id
+ * @property $stock
+ * @property $id_juego
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property Juego $juego
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Inventario extends Model
 {
-    use HasFactory;
+    
+    protected $perPage = 20;
 
-    protected $primaryKey = 'id';
-    public $incrementing = true;
-    public $timestamps = true;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['stock', 'id_juego'];
 
-    protected $fillable = [
-        'stock',
-        'id_juego',
-    ];
 
-    public function juego(): BelongsTo
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function juego()
     {
-        return $this->belongsTo(Juego::class, 'id_juego');
+        return $this->belongsTo(\App\Models\Juego::class, 'id_juego', 'id');
     }
+    
 }

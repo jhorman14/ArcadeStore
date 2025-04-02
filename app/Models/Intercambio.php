@@ -2,32 +2,46 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Class Intercambio
+ *
+ * @property $id
+ * @property $estado_intercambio
+ * @property $fecha_intercambio
+ * @property $id_producto_solicitado
+ * @property $id_producto_ofrecido
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property Juego $juego
+ * @property Juego $juego
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Intercambio extends Model
 {
-    use HasFactory;
+    
+    protected $perPage = 20;
 
-    protected $primaryKey = 'id';
-    public $incrementing = true;
-    public $timestamps = true;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['estado_intercambio', 'fecha_intercambio', 'id_producto_solicitado', 'id_producto_ofrecido'];
 
-    protected $fillable = [
-        'estado_intercambio',
-        'fecha_intercambio',
-        'id_productosolicitado',
-        'id_productoofrecido',
-    ];
 
-    public function productoSolicitado(): BelongsTo
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function juego()
     {
-        return $this->belongsTo(Juego::class, 'id_productosolicitado');
+        return $this->belongsTo(\App\Models\Juego::class, 'id_producto_ofrecido', 'id');
     }
-
-    public function productoOfrecido(): BelongsTo
-    {
-        return $this->belongsTo(Juego::class, 'id_productoofrecido');
-    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
 }

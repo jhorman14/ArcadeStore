@@ -50,7 +50,7 @@
                 </li>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ url('/biblioteca') }}">Juegos </a>
+                  <a class="nav-link" href="{{ url('/juegosDisp') }}">Juegos </a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="#">Free to play</a>
@@ -75,13 +75,13 @@
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Iniciar Sesion') }}</a>
                                 </li>
                             @endif
 
                             @if (Route::has('register'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Registrar') }}</a>
                                 </li>
                             @endif
                         @else
@@ -96,6 +96,11 @@
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Cerrar sesion') }}
                                     </a>
+                                    @if (Auth::user()->role === 'admin')
+                                      <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                        {{ __('Dashboard') }}
+                                      </a>
+                                        @endif
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf

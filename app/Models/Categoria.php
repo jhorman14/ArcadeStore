@@ -2,25 +2,44 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Class Categoria
+ *
+ * @property $id
+ * @property $nombre_categoria
+ * @property $descripcion
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property juego[] $arcadestore.juegos
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class Categoria extends Model
 {
-    use HasFactory;
+    
+    protected $perPage = 20;
 
-    protected $primaryKey = 'id';
-    public $incrementing = true;
-    public $timestamps = true;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['nombre_categoria', 'descripcion'];
 
-    protected $fillable = [
-        'nombre_categoria',
-        'descripcion',
-    ];
 
-    public function juegos(): HasMany
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function juegos()
     {
-        return $this->hasMany(Juego::class, 'id_categoria');
+        return $this->hasMany(\App\Models\juego::class, 'id', 'id_categoria');
     }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    
 }
