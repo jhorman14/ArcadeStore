@@ -8,7 +8,7 @@
     <link href="{{ asset('css/stylef.css') }}" rel="stylesheet" />
     <link href="{{ asset('css/form.css') }}" rel="stylesheet" />
     <div class="crear-juego-container">
-        <h1>Editar Juego</h1>
+        <h1>Crear Juego</h1>
 
         <form action="{{ route('admin.juegos.store') }}" method="POST" enctype="multipart/form-data">
     @csrf

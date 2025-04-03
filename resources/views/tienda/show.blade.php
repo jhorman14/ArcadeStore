@@ -13,7 +13,11 @@
             <p class="precio">COP ${{ number_format($juego->precio) }}</p>
             <div class="container">
                 <div class="detalle-juego-actions">
-                    <a href="{{ route('pedidos.create', ['juego_id' => $juego->id_juego]) }}" class="btn btn-success">Comprar ahora</a>
+                    @if ($comprado)
+                        <a href="{{-- Aquí iría la URL de descarga o juego --}}" class="btn btn-primary">Descargar y jugar</a>
+                    @else
+                        <a href="{{ route('pedidos.create', ['juego_id' => $juego->id]) }}" class="btn btn-success">Comprar ahora</a>
+                    @endif
                 </div>
             </div>
         </div>

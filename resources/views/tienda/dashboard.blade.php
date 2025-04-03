@@ -2,6 +2,7 @@
 @section('content')
 
 <link href="{{ asset('css/Dashboard.css') }}" rel="stylesheet" />
+<link href="{{ asset('css/stylef.css') }}" rel="stylesheet" />
     <div class="dashboard">
     <!--barra lateral-->
     <div class="sidebar">

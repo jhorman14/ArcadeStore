@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
-            $table->string('metodo_de_pago', 11);
+            $table->string('metodo_de_pago', 50);
             $table->integer('total');
             $table->unsignedBigInteger('id_pedido');
             $table->timestamps();

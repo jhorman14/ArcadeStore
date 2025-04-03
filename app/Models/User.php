@@ -66,4 +66,8 @@ class User extends AuthenticatableBase implements Authenticatable
     {
         return $this->hasMany(Venta::class, 'id_usuario');
     }
+    public function juegosComprados()
+    {
+        return $this->belongsToMany(Juego::class, 'pedidos', 'id_usuario', 'id_juego');
+    }
 }

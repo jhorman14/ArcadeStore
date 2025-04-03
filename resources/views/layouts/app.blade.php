@@ -53,10 +53,10 @@
                   <a class="nav-link" href="{{ url('/juegosDisp') }}">Juegos </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Free to play</a>
+                  <a class="nav-link" href="{{ url('/juegos-gratis') }}">Free to play</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="https://wa.me/+573143575304">Contactenos</a>
+                  <a class="nav-link" href="{{ url('/contacto') }}">Contactenos</a>
                 </li>
               </ul>
             <!--  <form class="form-inline my-2 my-lg-0 ml-0 ml-lg-4 mb-3 mb-lg-0">
@@ -87,7 +87,7 @@
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
+                                    {{ Auth::user()->nick }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

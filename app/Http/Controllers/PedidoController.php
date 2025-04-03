@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedido;
 use App\Models\Pago;
-use App\Models\Juego; // Asegúrate de importar el modelo Juego
 use Illuminate\Http\Request;
+use App\Models\Juego; // Asegúrate de importar el modelo Juego
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\PedidoRequest;
@@ -17,53 +17,72 @@ class PedidoController extends Controller
         $juegos = Juego::all();
         return view('pedido.create', compact('juegos', 'juego_id'));
     }
+
     /**
      * Store a newly created resource in storage (simulando pago exitoso y creando pedido).
      */
     public function store(PedidoRequest $request)
 {
-    // Simulación de pago exitoso
+    Log::info('Datos del formulario completo recibidos: ' . json_encode($request->all()));
+
     $pagoExitoso = true;
 
     if ($pagoExitoso) {
         DB::beginTransaction();
         try {
-            $pago = Pago::create([
-                'total' => $request->total, // Obtén el total del request
-                'id_pedido' => null,
-                'metodo_de_pago' => $request->metodo_de_pago,
-            ]);
+            $juego = Juego::findOrFail($request->id_juego);
+            $totalPedido = $juego->precio;
 
-            $pedido = Pedido::create([
+            $pedidoData = [
                 'id_usuario' => auth()->id(),
-                'fechapedido' => now(),
-                'estadopedido' => 'Pendiente',
-                'Id_juego' => $request->id_juego,
-                'total' => $request->total, // Guarda también el total en la tabla de pedidos (opcional pero útil)
-            ]);
+                'fecha_pedido' => now(),
+                'estado_pedido' => 'Completado',
+                'id_juego' => $request->id_juego,
+            ];
+            
+            $pedido = Pedido::create($pedidoData);
 
-            $pago->update(['id_pedido' => $pedido->id_pedido]);
+            $pagoData = [
+                'total' => $totalPedido,
+                'id_pedido' => $pedido->id,
+                'metodo_de_pago' => $request->metodo_de_pago,
+            ];
+            
+            $pago = Pago::create($pagoData);
 
             DB::commit();
-
-            return redirect()->route('pedidos.show', $pedido->id_pedido)->with('success', 'Pedido creado exitosamente.');
+            
+            return redirect()->route('pedido.gracias', $pedido)
+                           ->with('success', 'Pedido creado exitosamente');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear pedido y pago (simulado): ' . $e->getMessage());
-            return back()->withErrors(['error' => 'Hubo un error al crear el pedido.']);
+            Log::error('Error al crear pedido y pago: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return back()->withInput()->withErrors(['error' => 'Hubo un error al crear el pedido: ' . $e->getMessage()]);
         }
-    } else {
-        return back()->withErrors(['error' => 'El pago simulado no fue exitoso.']);
     }
+    
+    return back()->withInput()->withErrors(['error' => 'El pago simulado no fue exitoso.']);
 }
+
+
+    /**
+     * Show the thank you page after a successful order.
+     */
+    public function gracias(Pedido $pedido)
+    {
+        return view('pedido.gracias', compact('pedido'));
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $pedidos = auth()->user()->pedidos()->paginate(10);
-        return view('pedido.index', compact('pedidos'));
+        $juegosComprados = auth()->user()->juegosComprados; // Obtener los juegos comprados por el usuario a través de la tabla pedidos
+        return view('pedido.index', compact('pedidos', 'juegosComprados'));
     }
 
     /**
@@ -71,8 +90,14 @@ class PedidoController extends Controller
      */
     public function show(Pedido $pedido)
     {
-        return view('pedido.show', compact('pedido'));
+        $pago = Pago::where('id_pedido', $pedido->id)->first(); // Obtener el pago asociado
+        return view('pedido.show', compact('pedido', 'pago'));
     }
+
+    public function __construct()
+{
+    $this->middleware('auth');
+}
 
     // Puedes agregar otros métodos como edit, update, destroy si los necesitas para la gestión de pedidos
 }

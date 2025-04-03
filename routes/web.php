@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PagoController;
@@ -20,9 +21,15 @@ Route::get('/', function () {
 Route::get('/juegosDisp', function () {
     return view('tienda.juegos');
 });
+Route::get('/contacto', function () {
+    return view('contacto');
+})->name('contacto');
+
+Route::post('/enviar-mensaje', [ContactoController::class, 'enviarMensaje'])->name('enviar.mensaje');
 
 Route::get('/juegosDisp', [JuegoController::class, 'index'])->name('juegosDisp');
 Route::get('/juegosDisp/{juego}', [JuegoController::class, 'show'])->name('tienda.show');
+Route::get('/juegos-gratis', [JuegoController::class, 'juegosGratis'])->name('tienda.juegos-gratis');
 
 Auth::routes();
 
@@ -36,7 +43,6 @@ Route::middleware('auth')->group(function () {
 });
 
 // Rutas para los recursos (CRUD)
-Route::resource('pedidos', PedidoController::class)->middleware('auth');
 Route::resource('pagos', PagoController::class)->middleware('auth');
 
 Route::resource('ventas', VentaController::class)->middleware('auth');
@@ -44,6 +50,14 @@ Route::resource('intercambios', IntercambioController::class)->middleware('auth'
 
 Route::resource('inventarios', InventarioController::class)->middleware('auth');
 Route::resource('categorias', CategoriaController::class); // Puedes decidir si requiere autenticación
+
+
+Route::get('/pedidos/create/{juego_id?}', [PedidoController::class, 'create'])->name('pedidos.create');
+Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedido.store');
+Route::get('/pedidos/gracias/{pedido}', [PedidoController::class, 'gracias'])->name('pedido.gracias');
+Route::get('/pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
+Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
+
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('juegos', AdminJuegoController::class);

@@ -80,3 +80,25 @@ select {
 .crear-juego-container button[type="submit"]:hover {
     background-color: #333;
 }
+
+/* En tu archivo CSS (contacto.css o form.css) */
+
+input[type="text"],
+input[type="email"],
+textarea {
+  padding: 10px;
+  margin-bottom: 15px; /* Añade margen inferior */
+  border: 1px solid #ccc; /* Añade un borde para mayor claridad */
+  width: 100%; /* Asegura que los campos ocupen todo el ancho disponible */
+  box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+}
+
+label {
+  display: block; /* Hace que las etiquetas ocupen una línea completa */
+  margin-bottom: 5px; /* Añade margen inferior a las etiquetas */
+}
+
+button[type="submit"] {
+  padding: 10px 20px;
+  margin-top: 20px; /* Añade margen superior al botón */
+}

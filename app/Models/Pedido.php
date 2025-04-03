@@ -7,23 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class Pedido
  *
- * @property $id
- * @property $fecha_pedido
- * @property $estado_pedido
- * @property $id_usuario
- * @property $id_juego
- * @property $created_at
- * @property $updated_at
+ * @property int $id
+ * @property \Carbon\Carbon|null $fecha_pedido
+ * @property string|null $estado_pedido
+ * @property int $id_usuario
+ * @property int $id_juego
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
  *
  * @property Juego $juego
  * @property User $user
- * @property pago[] $arcadestore.pagos
+ * @property Pago|null $pago
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Pedido extends Model
 {
-    
+
     protected $perPage = 20;
 
     /**
@@ -41,7 +41,7 @@ class Pedido extends Model
     {
         return $this->belongsTo(\App\Models\Juego::class, 'id_juego', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -49,13 +49,13 @@ class Pedido extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'id_usuario', 'id');
     }
-    
+
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function pagos()
+    public function pago()
     {
-        return $this->hasMany(\App\Models\pago::class, 'id', 'id_pedido');
+        return $this->hasOne(\App\Models\Pago::class, 'id_pedido', 'id');
     }
-    
+
 }

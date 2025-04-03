@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Juego;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class JuegoController extends Controller
@@ -11,16 +10,36 @@ class JuegoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(): View
     {
         $juegos = Juego::all(); // Obtiene todos los juegos de la base de datos
-        return view('tienda.juegos', compact('juegos'));
+        $juegosAdquiridos = []; // Inicializamos la variable como un array vacío
+
+        // Obtener juegos adquiridos si el usuario está autenticado
+        if (auth()->check()) {
+            $juegosAdquiridos = auth()->user()->juegosComprados;
+        }
+
+        return view('tienda.juegos', compact('juegos', 'juegosAdquiridos'));
+
     }
 
     public function show($id): View
     {
-        $juego = Juego::find($id);
+        $juego = Juego::findOrFail($id);
 
-        return view('tienda.show', compact('juego'));
+        // Verificar si el usuario ha comprado el juego
+        $comprado = false;
+        if (auth()->check()) {
+            $comprado = auth()->user()->juegosComprados()->where('juegos.id', $juego->id)->exists();
+        }
+
+        return view('tienda.show', compact('juego', 'comprado'));
+    }
+
+    public function juegosGratis(): View
+    {
+        $juegosGratis = Juego::where('precio', 0)->get();
+        return view('tienda.juegos-gratis', compact('juegosGratis'));
     }
 }

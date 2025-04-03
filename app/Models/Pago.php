@@ -28,7 +28,7 @@ class Pago extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['total', 'id_pedido', '@metodo de_pago'];
+    protected $fillable = ['total', 'id_pedido', 'metodo_de_pago'];
 
 
     /**

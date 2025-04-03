@@ -1,45 +1,27 @@
 @extends('layouts.app')
 
-@section('template_title')
-    {{ $pedido->name ?? __('Show') . " " . __('Pedido') }}
-@endsection
-
 @section('content')
-    <section class="content container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Pedido</span>
-                        </div>
-                        <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('pedidos.index') }}"> {{ __('Back') }}</a>
-                        </div>
-                    </div>
+    <div class="container">
+        <h1>Detalles del Pedido</h1>
 
-                    <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Fecha Pedido:</strong>
-                                    {{ $pedido->fecha_pedido }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Estado Pedido:</strong>
-                                    {{ $pedido->estado_pedido }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Id Usuario:</strong>
-                                    {{ $pedido->id_usuario }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Id Juego:</strong>
-                                    {{ $pedido->id_juego }}
-                                </div>
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
-                    </div>
-                </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Pedido #{{ $pedido->id }}</h5>
+                <p class="card-text">Fecha del Pedido: {{ $pedido->fecha_pedido }}</p>
+                <p class="card-text">Estado del Pedido: {{ $pedido->estado_pedido }}</p>
+                <p class="card-text">Juego: {{ $pedido->juego->titulo }}</p>
+                @if ($pedido->pago)
+                    <p class="card-text">Método de Pago: {{ $pedido->pago->metodo_de_pago }}</p>
+                    <p class="card-text">Total del Pedido: ${{ number_format($pedido->pago->total, 2) }}</p>
+                @else
+                    <p class="card-text">Información de Pago no disponible.</p>
+                @endif
+                <a href="{{ route('pedidos.index') }}" class="btn btn-primary">Volver a Mis Pedidos</a>
             </div>
         </div>
-    </section>
+    </div>
 @endsection

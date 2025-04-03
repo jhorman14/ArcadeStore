@@ -1,77 +1,60 @@
 @extends('layouts.app')
 
-@section('template_title')
-    Pedidos
-@endsection
-
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="container">
+        <h1>Mis Pedidos</h1>
 
-                            <span id="card_title">
-                                {{ __('Pedidos') }}
-                            </span>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Juego</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($pedidos as $pedido)
+                    <tr>
+                        <td>{{ $pedido->id }}</td>
+                        <td>{{ $pedido->fecha_pedido }}</td>
+                        <td>{{ $pedido->estado_pedido }}</td>
+                        <td>{{ $pedido->juego->titulo }}</td>
+                        <td>
+                            <a href="{{ route('pedidos.show', $pedido->id) }}" class="btn btn-sm btn-info">Ver Detalles</a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5">No has realizado ningún pedido aún.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
 
-                             <div class="float-right">
-                                <a href="{{ route('pedidos.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
-                                </a>
-                              </div>
+        {{ $pedidos->links() }}
+
+        <hr>
+
+        <h2>Juegos de tu Propiedad</h2>
+        @if ($juegosComprados->count() > 0)
+            <div class="row">
+                @foreach ($juegosComprados as $juego)
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $juego->titulo }}</h5>
+                                <p class="card-text">Precio: ${{ number_format($juego->precio, 2) }}</p>
+                                <p class="card-text">¡Ya tienes este juego!</p>
+                                <a href="{{ route('tienda.show', $juego->id) }}" class="btn btn-secondary">Ver Detalles del Juego</a>
+                            </div>
                         </div>
                     </div>
-                    @if ($message = Session::get('success'))
-                        <div class="alert alert-success m-4">
-                            <p>{{ $message }}</p>
-                        </div>
-                    @endif
-
-                    <div class="card-body bg-white">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="thead">
-                                    <tr>
-                                        <th>No</th>
-                                        
-									<th >Fecha Pedido</th>
-									<th >Estado Pedido</th>
-									<th >Id Usuario</th>
-									<th >Id Juego</th>
-
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($pedidos as $pedido)
-                                        <tr>
-                                            <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $pedido->fecha_pedido }}</td>
-										<td >{{ $pedido->estado_pedido }}</td>
-										<td >{{ $pedido->id_usuario }}</td>
-										<td >{{ $pedido->id_juego }}</td>
-
-                                            <td>
-                                                <form action="{{ route('pedidos.destroy', $pedido->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('pedidos.show', $pedido->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('pedidos.edit', $pedido->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                {!! $pedidos->withQueryString()->links() !!}
+                @endforeach
             </div>
-        </div>
+        @else
+            <p>Aún no tienes juegos en tu propiedad.</p>
+        @endif
     </div>
 @endsection

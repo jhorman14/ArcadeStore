@@ -22,10 +22,22 @@ class PedidoRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'fecha_pedido' => 'required',
-			'estado_pedido' => 'required|string',
-			'id_usuario' => 'required',
-			'id_juego' => 'required',
+			'id_juego' => 'required|exists:juegos,id',
+            'metodo_de_pago' => 'required|string',
+            'total' => 'required|numeric|min:0'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'id_juego.required' => 'Por favor, selecciona un juego.',
+            'id_juego.exists' => 'El juego seleccionado no existe.',
+            'metodo_de_pago.required' => 'Por favor, selecciona un método de pago.',
+            'metodo_de_pago.in' => 'El método de pago seleccionado no es válido.',
+            'total.required' => 'El total es requerido.',
+            'total.numeric' => 'El total debe ser un número.',
+            'total.min' => 'El total no puede ser negativo.'
         ];
     }
 }
