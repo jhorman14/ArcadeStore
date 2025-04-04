@@ -62,9 +62,18 @@ class CategoriaController extends Controller
 
     public function destroy($id): RedirectResponse
     {
-        Categoria::find($id)->delete();
+        $categoria = Categoria::find($id);
 
-        return Redirect::route('categorias.index')
-            ->with('success', 'Categoria deleted successfully');
+        if ($categoria) {
+            // Desactivar el juego en lugar de eliminarlo
+            $categoria->activo = !$categoria->activo; // Asumiendo que tienes un campo 'activo' en tu modelo Juego
+            $categoria->save();
+
+            return Redirect::route('categorias.index')
+                ->with('success', 'Categoria desactivada exitosamente.');
+        } else {
+            return Redirect::route('Categorias.index')
+                ->with('error', 'Categoria no encontrada.');
+        }
     }
 }

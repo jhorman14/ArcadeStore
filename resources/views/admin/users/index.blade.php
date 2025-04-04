@@ -1,59 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Administración de Usuarios</h1>
+    <div class="container">
+        <h1>Lista de Usuarios</h1>
 
-    @if (session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
-    <div class="card">
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($users as $user)
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $user)
-                    <tr>
-                        <td>{{ $user->id }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ ucfirst($user->role) }}</td>
+                        <td>{{ $user->role }}</td>
+                        <td>{{ $user->is_active ? 'Activo' : 'Inactivo' }}</td>
                         <td>
-                            @if ($user->is_active)
-                            <span class="badge bg-success">Activo</span>
+                            @if($user->role === 'user')
+                                <form action="{{ route('admin.users.change-role', $user->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="role" value="admin">
+                                    <button type="submit" class="btn btn-sm btn-success">Convertir a Admin</button>
+                                </form>
                             @else
-                            <span class="badge bg-danger">Inactivo</span>
+                                <form action="{{ route('admin.users.change-role', $user->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="role" value="user">
+                                    <button type="submit" class="btn btn-sm btn-warning">Convertir a Usuario</button>
+                                </form>
                             @endif
                         </td>
-                        <td>
-                            <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-warning">Editar</a>
-                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                @php
-                                $confirmMessage = '¿Estás seguro de que quieres ' . ($user->is_active ? 'desactivar' : 'activar') . ' este usuario?';
-                                @endphp
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('{{ $confirmMessage }}')">
-                                    {{ $user->is_active ? 'Desactivar' : 'Activar' }}
-                                </button>
-                                
-                            </form>
-                        </td>
                     </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                @endforeach
+            </tbody>
+        </table>
     </div>
-</div>
 @endsection

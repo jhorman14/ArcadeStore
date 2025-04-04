@@ -23,7 +23,7 @@ class Admin
         }
 
         // Redirigir a la página principal (assuming it's named 'home')
-        return redirect()->route('/')->with('error', 'No tienes permisos de administrador.');
+        return redirect()->route('inicio')->with('error', 'No tienes permisos de administrador.');
         
     }
 }

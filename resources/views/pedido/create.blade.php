@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<<<<<<< HEAD
 <main class="form-buy">
     <div class="formulario-compra">
         <h1>Crear Nuevo Pedido</h1>
@@ -10,6 +11,37 @@
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
+=======
+<div class="container">
+<link href="{{ asset('css/pedido.css') }}" rel="stylesheet" />
+    <h1>Crear Nuevo Pedido</h1>
+
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    @if (session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
+    <form id="pedido-form" action="{{ route('pedido.store') }}" method="POST">
+        @csrf
+
+        <div class="form-group">
+            <label for="id_juego">Selecciona el Juego:</label>
+            <select class="form-control @error('id_juego') is-invalid @enderror" id="id_juego" name="id_juego" required onchange="actualizarTotal()">
+                <option value="">Selecciona un juego</option>
+                @foreach ($juegos as $juego)
+                <option value="{{ $juego->id }}" data-precio="{{ $juego->precio }}" {{ old('id_juego') == $juego->id ? 'selected' : '' }}>
+                    {{ $juego->titulo }} - ${{ number_format($juego->precio, 2) }}
+                </option>
+>>>>>>> d83c3c2a6184cb5b97311dad7a424e9919224411
                 @endforeach
             </ul>
         </div>
@@ -54,6 +86,7 @@
                 @enderror
             </div>
 
+<<<<<<< HEAD
             <div class="form-group">
                 <label for="total">Total del Pedido:</label>
                 <input type="text" class="form-control" id="total" name="total" value="{{ old('total', '0.00') }}" readonly>
@@ -74,4 +107,44 @@
         window.onload = actualizarTotal;
     </script>
 </main class="form-buy">
+=======
+    // Actualizar el total al cargar la página si ya hay un juego seleccionado
+    window.onload = actualizarTotal;
+
+    document.getElementById('pedido-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const juegoId = document.getElementById('id_juego').value;
+        
+        // Verificar que se haya seleccionado un juego
+        if (!juegoId) {
+            alert('Por favor selecciona un juego');
+            return;
+        }
+
+        fetch('/inventario/reducir-stock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ juego_id: juegoId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Si el stock se redujo exitosamente, enviamos el formulario
+                this.submit();
+            } else {
+                // Si hubo un error, mostramos el mensaje
+                alert(data.error || 'Ocurrió un error al procesar el pedido');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al procesar el pedido');
+        });
+    });
+</script>
+>>>>>>> d83c3c2a6184cb5b97311dad7a424e9919224411
 @endsection

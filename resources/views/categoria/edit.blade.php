@@ -5,25 +5,34 @@
 @endsection
 
 @section('content')
-    <section class="content container-fluid">
-        <div class="">
-            <div class="col-md-12">
+<section class="content container-fluid">
+    <div class="">
+        <div class="col-md-12">
 
-                <div class="card card-default">
-                    <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Categoria</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('categorias.update', $categoria->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
-                            @csrf
+            <div class="card card-default">
+                <div class="card-header">
+                    <span class="card-title">{{ __('Update') }} Categoria</span>
+                </div>
+                <div class="card-body bg-white">
+                    <form action="{{ route('categorias.update', $categoria->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
-                            @include('categoria.form')
+                        <div class="form-group">
+                            <label for="nombre_categoria">Nombre Categoria</label>
+                            <input type="text" name="nombre_categoria" id="nombre_categoria" class="form-control" value="{{ $categoria->nombre_categoria }}">
+                        </div>
 
-                        </form>
-                    </div>
+                        <div class="form-group">
+                            <label for="descripcion">Descripcion</label>
+                            <textarea name="descripcion" id="descripcion" class="form-control">{{ $categoria->descripcion }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                    </form>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection

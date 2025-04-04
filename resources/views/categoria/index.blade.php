@@ -51,11 +51,16 @@
 										<td >{{ $categoria->descripcion }}</td>
 
                                             <td>
-                                                <form action="{{ route('categorias.destroy', $categoria->id) }}" method="POST">
+                                                <form action="{{ route('categorias.destroy', $categoria->id) }}" method="POST" class="d-inline">
                                                     <a class="btn btn-sm btn-success" href="{{ route('categorias.edit', $categoria->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    @php
+                                                        $confirmMessage = '¿Estás seguro de que quieres ' . ($categoria->activo ? 'desactivar' : 'activar') . ' este juego?';
+                                                    @endphp
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('{{ $confirmMessage }}')">
+                                                        {{ $categoria->activo ? 'Desactivar' : 'Activar' }}
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>

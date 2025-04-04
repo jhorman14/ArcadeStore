@@ -2,6 +2,11 @@
 @section('content')
     <!-- end header section -->
     <!-- slider section -->
+    @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
     <section class=" slider_section position-relative">
       <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
