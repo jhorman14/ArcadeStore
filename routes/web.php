@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\JuegoController as AdminJuegoController;
 use App\Http\Controllers\Admin\UserController as AdminUserController; // Agrega esta línea
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\SearchController;
 
 Route::get('/', function () {
     return view('tienda.index');
