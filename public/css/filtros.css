@@ -1,3 +1,30 @@
+/*barra lateral*/
+.sidebar {
+    width: auto;
+    background-color: #2f3542;
+    color: #fff;
+    padding: 11px;
+    height: 100%;
+    }
+    .sidebar h2{
+    text-align:center;
+    margin-bottom:20px;
+    }
+    .sidebar ul{
+    margin-bottom:15px;
+    }
+    .sidebar ul li a{
+    color: #fff;
+    text-decoration: none;
+    font-size:18px;
+    display:block;
+    padding:10px;
+    border-radius: 5px;
+    transition:background-color 0.03s;
+    }
+    .sidebar ul li a:hover{
+    background-color: #575d6d;
+    }
 /* Estilos para la barra de búsqueda */
 .sidebar .search-bar {
     padding: 15px;
