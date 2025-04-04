@@ -6,8 +6,6 @@
     <div class="dashboard">
     <!--barra lateral-->
     <div class="sidebar">
-
-        <h2>ARCADE_STORE</h2>
         <ul>
             <li><a href="{{ url('admin/dashboard') }}">Inicio</a></li>
             <li><a href="{{ url('admin/juegos') }}">juegos</a></li>

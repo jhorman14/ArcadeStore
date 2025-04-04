@@ -1,21 +1,22 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+  <!-- CSRF Token -->
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'ARCADESTORE') }}</title>
+  <title>{{ config('app.name', 'ARCADESTORE') }}</title>
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+  <!-- Fonts -->
+  <link rel="dns-prefetch" href="//fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-     <!-- bootstrap core css -->
+  <!-- Scripts -->
+  @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+  <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}" />
 
   <!-- fonts style -->
@@ -25,8 +26,9 @@
   <!-- responsive style -->
   <link href="{{ asset('css/responsive.css') }}" rel="stylesheet" />
 </head>
+
 <body>
-        <div class="hero_area">
+  <div class="hero_area">
     <!-- header section strats -->
     <header class="header_section">
       <div class="container-fluid">
@@ -58,70 +60,78 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url('/contacto') }}">Contactenos</a>
                 </li>
+                @auth
+                @if (Auth::user()->role === 'admin')
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                </li>
+                @endif
+                @endauth
               </ul>
-            <!--  <form class="form-inline my-2 my-lg-0 ml-0 ml-lg-4 mb-3 mb-lg-0">
+              <!--  <form class="form-inline my-2 my-lg-0 ml-0 ml-lg-4 mb-3 mb-lg-0">
                 <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit"></button>
               </form>-->
             </div>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
+              <!-- Left Side Of Navbar -->
+              <ul class="navbar-nav me-auto">
 
-                    </ul>
+              </ul>
 
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Iniciar Sesion') }}</a>
-                                </li>
-                            @endif
+              <!-- Right Side Of Navbar -->
+              <ul class="navbar-nav ms-auto">
+                <!-- Authentication Links -->
+                @guest
+                @if (Route::has('login'))
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('login') }}">{{ __('Iniciar Sesion') }}</a>
+                </li>
+                @endif
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Registrar') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->nick }}
-                                </a>
+                @if (Route::has('register'))
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('register') }}">{{ __('Registrar') }}</a>
+                </li>
+                @endif
+                @else
+                <li class="nav-item dropdown">
+                  <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                    @if (Auth::user()->role === 'admin')
+                    Administrador - {{ Auth::user()->name }}
+                    @else
+                    {{ Auth::user()->nick }}
+                    @endif
+                  </a>
 
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
+                  <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ route('logout') }}"
+                      onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Cerrar sesion') }}
-                                    </a>
-                                    @if (Auth::user()->role === 'admin')
-                                      <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                        {{ __('Dashboard') }}
-                                      </a>
-                                        @endif
+                      {{ __('Cerrar sesion') }}
+                    </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                      @csrf
+                    </form>
+                  </div>
+                </li>
+                @endguest
+              </ul>
+            </div>
           </div>
         </nav>
       </div>
     </header>
-    
 
-        <main class="py-4">
-            @yield('content')
-        </main>
-    </div>
-    <script type="text/javascript" src="{{ asset('js/jquery-3.4.1.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('js/bootstrap.js') }}"></script>
-    
+
+    <main class="py-4">
+      @yield('content')
+    </main>
+  </div>
+  <script type="text/javascript" src="{{ asset('js/jquery-3.4.1.min.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/bootstrap.js') }}"></script>
+
 </body>
+
 </html>
