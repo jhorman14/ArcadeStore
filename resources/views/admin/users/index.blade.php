@@ -46,6 +46,7 @@
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('{{ $confirmMessage }}')">
                                     {{ $user->is_active ? 'Desactivar' : 'Activar' }}
                                 </button>
+                                
                             </form>
                         </td>
                     </tr>

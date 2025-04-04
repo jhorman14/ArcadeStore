@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('titulo', 50);
             $table->double('precio');
             $table->text('descripcion')->nullable();
+            $table->boolean('activo')->default(true);
             $table->text('requisitos_minimos')->nullable();
             $table->text('requisitos_recomendados')->nullable();
             $table->string('imagen')->nullable(); // Agrega el campo para la imagen

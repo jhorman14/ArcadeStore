@@ -14,6 +14,7 @@ class JuegoController extends Controller
     {
         $juegos = Juego::all(); // Obtiene todos los juegos de la base de datos
         $juegosAdquiridos = []; // Inicializamos la variable como un array vacío
+        $juegos = Juego::where('activo', true)->get();
 
         // Obtener juegos adquiridos si el usuario está autenticado
         if (auth()->check()) {
