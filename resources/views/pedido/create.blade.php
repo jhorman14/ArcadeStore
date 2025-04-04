@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container">
+<link href="{{ asset('css/pedido.css') }}" rel="stylesheet" />
     <h1>Crear Nuevo Pedido</h1>
 
     @if ($errors->any())
@@ -18,7 +19,7 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <form action="{{ route('pedido.store') }}" method="POST">
+    <form id="pedido-form" action="{{ route('pedido.store') }}" method="POST">
         @csrf
 
         <div class="form-group">
@@ -71,5 +72,40 @@
 
     // Actualizar el total al cargar la página si ya hay un juego seleccionado
     window.onload = actualizarTotal;
+
+    document.getElementById('pedido-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const juegoId = document.getElementById('id_juego').value;
+        
+        // Verificar que se haya seleccionado un juego
+        if (!juegoId) {
+            alert('Por favor selecciona un juego');
+            return;
+        }
+
+        fetch('/inventario/reducir-stock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ juego_id: juegoId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Si el stock se redujo exitosamente, enviamos el formulario
+                this.submit();
+            } else {
+                // Si hubo un error, mostramos el mensaje
+                alert(data.error || 'Ocurrió un error al procesar el pedido');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al procesar el pedido');
+        });
+    });
 </script>
 @endsection

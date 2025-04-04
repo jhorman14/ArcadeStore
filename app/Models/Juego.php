@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class Juego
@@ -18,18 +20,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property $updated_at
  *
  * @property Categoria $categoria
- * @property convenio[] $arcadestore.convenios
- * @property intercambio[] $arcadestore.intercambios
- * @property intercambio[] $arcadestore.intercambios
- * @property inventario[] $arcadestore.inventarios
- * @property pedido[] $arcadestore.pedidos
- * @property venta[] $arcadestore.ventas
+ * @property Convenio[] $convenios
+ * @property Intercambio[] $intercambios_ofrecidos
+ * @property Inventario $inventario
+ * @property Pedido[] $pedidos
+ * @property Venta[] $ventas
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Juego extends Model
 {
-    
+
     protected $perPage = 20;
 
     /**
@@ -39,57 +40,51 @@ class Juego extends Model
      */
     protected $fillable = ['titulo', 'precio', 'descripcion', 'requisitos_minimos', 'requisitos_recomendados', 'id_categoria', 'imagen'];
 
-
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function categoria()
+    public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function convenios()
     {
-        return $this->hasMany(convenio::class, 'id', 'id_juego');
+        return $this->hasMany(Convenio::class, 'id_juego', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function intercambios()
+    public function intercambios_ofrecidos()
     {
-        return $this->hasMany(intercambio::class, 'id', 'id_producto_ofrecido');
+        return $this->hasMany(Intercambio::class, 'id_producto_ofrecido', 'id');
     }
-    
+
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasOne
      */
-    
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function inventarios()
+    public function inventario(): HasOne
     {
-        return $this->hasMany(inventario::class, 'id', 'id_juego');
+        return $this->hasOne(Inventario::class, 'id_juego', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function pedidos()
     {
-        return $this->hasMany(pedido::class, 'id', 'id_juego');
+        return $this->hasMany(Pedido::class, 'id_juego', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function ventas()
     {
-        return $this->hasMany(venta::class, 'id', 'id_juego');
+        return $this->hasMany(Venta::class, 'id_juego', 'id');
     }
-    
 }

@@ -18,7 +18,7 @@ use App\Http\Controllers\SearchController;
 
 Route::get('/', function () {
     return view('tienda.index');
-});
+})->name('inicio');
 Route::get('/juegosDisp', function () {
     return view('tienda.juegos');
 });
@@ -41,6 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/{id}/edit', [UserController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/{id}', [UserController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/deactivate', [UserController::class, 'deactivateAccount'])->name('profile.deactivate');
+    Route::get('/pedidos/create/{juego_id?}', [PedidoController::class, 'create'])->name('pedidos.create');
+    Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedido.store');
+    Route::get('/pedidos/gracias/{pedido}', [PedidoController::class, 'gracias'])->name('pedido.gracias');
+    Route::get('/pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
+    Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
 });
 
 // Rutas para los recursos (CRUD)
@@ -49,15 +54,19 @@ Route::resource('pagos', PagoController::class)->middleware('auth');
 Route::resource('ventas', VentaController::class)->middleware('auth');
 Route::resource('intercambios', IntercambioController::class)->middleware('auth');
 
-Route::resource('inventarios', InventarioController::class)->middleware('auth');
-Route::resource('categorias', CategoriaController::class); // Puedes decidir si requiere autenticación
+Route::post('/inventario/reducir-stock', [InventarioController::class, 'reducirStock'])->name('inventario.reducir-stock');
 
 
-Route::get('/pedidos/create/{juego_id?}', [PedidoController::class, 'create'])->name('pedidos.create');
-Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedido.store');
-Route::get('/pedidos/gracias/{pedido}', [PedidoController::class, 'gracias'])->name('pedido.gracias');
-Route::get('/pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
-Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
+
+Route::prefix('categorias')->name('categorias.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/', [CategoriaController::class, 'index'])->name('index');
+    Route::get('/create', [CategoriaController::class, 'create'])->name('create');
+    Route::post('/', [CategoriaController::class, 'store'])->name('store');
+    Route::get('/{categoria}/edit', [CategoriaController::class, 'edit'])->name('edit');
+    Route::put('/{categoria}', [CategoriaController::class, 'update'])->name('update');
+    Route::delete('/{categoria}', [CategoriaController::class, 'destroy'])->name('destroy');
+});
+
 
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
@@ -66,10 +75,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         return view('tienda.dashboard');})->name('admin.dashboard'); // Asigna un nombre a la ruta del dashboard
     Route::resource('convenios', ConvenioController::class);
     Route::resource('users', AdminUserController::class); // Agrega las rutas para el controlador de usuarios de admin
+    
 });
 
 // Rutas para admin/juegos - Usando el controlador AdminJuegoController
-Route::prefix('admin/juegos')->name('admin.juegos.')->group(function () {
+Route::prefix('admin/juegos')->name('admin.juegos.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminJuegoController::class, 'index'])->name('index');
     Route::get('/crear', [AdminJuegoController::class, 'create'])->name('crear');
     Route::post('/store', [AdminJuegoController::class, 'store'])->name('store');
@@ -79,11 +89,14 @@ Route::prefix('admin/juegos')->name('admin.juegos.')->group(function () {
 });
 
 // Rutas para admin/users - Usando el controlador AdminUserController
-Route::prefix('admin/users')->name('admin.users.')->group(function () {
+Route::prefix('admin/users')->name('admin.users.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminUserController::class, 'index'])->name('index');
     Route::get('/create', [AdminUserController::class, 'create'])->name('create');
     Route::post('/', [AdminUserController::class, 'store'])->name('store');
     Route::get('/{user}/edit', [AdminUserController::class, 'edit'])->name('edit');
     Route::put('/{user}', [AdminUserController::class, 'update'])->name('update');
     Route::delete('/{user}', [AdminUserController::class, 'destroy'])->name('destroy');
+    Route::put('/{user}/change-role', [AdminUserController::class, 'changeRole'])->name('change-role');
 });
+
+

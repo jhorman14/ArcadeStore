@@ -47,6 +47,10 @@
             @endforeach
         </select>
     </div>
+    <div class="form-group">
+        <label for="stock">Stock en Inventario</label>
+        <input type="number" name="stock" id="stock" class="form-control" required>
+    </div>
 
     <div>
         <label for="imagen">Imagen:</label>

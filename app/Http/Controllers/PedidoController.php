@@ -51,6 +51,8 @@ class PedidoController extends Controller
             $pago = Pago::create($pagoData);
 
             DB::commit();
+            $inventarioController = app(InventarioController::class);
+            $inventarioController->reducirStock($request);
             
             return redirect()->route('pedido.gracias', $pedido)
                            ->with('success', 'Pedido creado exitosamente');
