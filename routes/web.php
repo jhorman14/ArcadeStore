@@ -32,6 +32,7 @@ Route::get('/juegosDisp', [JuegoController::class, 'index'])->name('juegosDisp')
 Route::get('/juegosDisp/{juego}', [JuegoController::class, 'show'])->name('tienda.show');
 Route::get('/juegos-gratis', [JuegoController::class, 'juegosGratis'])->name('tienda.juegos-gratis');
 
+
 Auth::routes();
 
 // Rutas para el perfil de usuario (protegidas)
