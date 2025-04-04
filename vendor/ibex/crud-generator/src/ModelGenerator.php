@@ -36,19 +36,19 @@ class ModelGenerator
      *
      * @return array
      */
-    public function getEloquentRelations()
+    public function getEloquentRelations(): array
     {
         return [$this->functions, $this->properties];
     }
 
-    private function _init()
+    private function _init(): void
     {
         foreach ($this->_getTableRelations() as $relation) {
             $this->functions .= $this->_getFunction($relation);
         }
     }
 
-    private function _getFunction(array $relation)
+    private function _getFunction(array $relation): string
     {
         switch ($relation['name']) {
             case 'hasOne':
@@ -76,7 +76,7 @@ class ModelGenerator
      *
      * @return array
      */
-    private function _getTableRelations()
+    private function _getTableRelations(): array
     {
         return [
             ...$this->getBelongsTo(),
@@ -84,7 +84,23 @@ class ModelGenerator
         ];
     }
 
-    protected function getBelongsTo()
+    /**
+     * Extract the table name from a fully qualified table name (e.g., database.table).
+     * @param  string  $foreignTable
+     * @return string
+     */
+    protected function extractTableName(string $foreignTable): string
+    {
+        $dotPosition = strpos($foreignTable, '.');
+
+        if ($dotPosition !== false) {
+            return substr($foreignTable, $dotPosition + 1); // Extract table name only
+        }
+
+        return $foreignTable; // No dot found, return the original name
+    }
+
+    protected function getBelongsTo(): array
     {
         $relations = Schema::getForeignKeys($this->table);
 
@@ -95,10 +111,12 @@ class ModelGenerator
                 continue;
             }
 
+            $foreignTable = $this->extractTableName($table);
+
             $eloquent[] = [
                 'name' => 'belongsTo',
-                'relation_name' => Str::camel(Str::singular($relation['foreign_table'])),
-                'class' => Str::studly(Str::singular($relation['foreign_table'])),
+                'relation_name' => Str::camel(Str::singular($foreignTable)),
+                'class' => Str::studly(Str::singular($foreignTable)),
                 'foreign_key' => $relation['columns'][0],
                 'owner_key' => $relation['foreign_columns'][0],
             ];
@@ -107,7 +125,7 @@ class ModelGenerator
         return $eloquent;
     }
 
-    protected function getOtherRelations()
+    protected function getOtherRelations(): array
     {
         $tables = Schema::getTableListing();
         $eloquent = [];
@@ -126,11 +144,12 @@ class ModelGenerator
                 }
 
                 $isUniqueColumn = $this->getUniqueIndex($indexes, $relation['columns'][0]);
+                $foreignTable = $this->extractTableName($table);
 
                 $eloquent[] = [
                     'name' => $isUniqueColumn ? 'hasOne' : 'hasMany',
-                    'relation_name' => Str::camel($isUniqueColumn ? Str::singular($table) : Str::plural($table)),
-                    'class' => Str::studly(Str::singular($table)),
+                    'relation_name' => Str::camel($isUniqueColumn ? Str::singular($foreignTable) : Str::plural($foreignTable)),
+                    'class' => Str::studly(Str::singular($foreignTable)),
                     'foreign_key' => $relation['foreign_columns'][0],
                     'owner_key' => $relation['columns'][0],
                 ];
@@ -140,7 +159,7 @@ class ModelGenerator
         return $eloquent;
     }
 
-    private function getUniqueIndex($indexes, $column)
+    private function getUniqueIndex($indexes, $column): bool
     {
         $isUnique = false;
 
