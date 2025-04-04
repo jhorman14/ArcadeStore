@@ -76,7 +76,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         return view('tienda.dashboard');})->name('admin.dashboard'); // Asigna un nombre a la ruta del dashboard
     Route::resource('convenios', ConvenioController::class);
     Route::resource('users', AdminUserController::class); // Agrega las rutas para el controlador de usuarios de admin
-    
+    Route::resource('ventas', VentaController::class);
 });
 
 // Rutas para admin/juegos - Usando el controlador AdminJuegoController
