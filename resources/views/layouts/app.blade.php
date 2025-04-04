@@ -34,7 +34,7 @@
       <div class="container-fluid">
         <nav class="navbar navbar-expand-lg custom_nav-container ">
           <a class="navbar-brand" href="{{ url('/') }}">
-            <img src="images/logo.png" alt="">
+            <img src="/images/logo.png" alt="">
             <span>
               ARCADE STORE
             </span>

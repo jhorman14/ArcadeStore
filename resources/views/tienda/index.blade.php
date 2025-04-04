@@ -363,7 +363,7 @@
   <section class="gallery-section layout_padding">
     <div class="container">
       <h2>
-        NUESTA COLECCION.
+        NUESTA COLECCION
       </h2>
     </div>
     <div class="container ">

@@ -68,7 +68,8 @@
             <button type="submit" class="login-button">
                 {{ __('Registrar') }}
             </button>
-
+            <a href="{{ route('login') }}" class="create-account">Tengo una cuenta</a>
+            <a href="#" class="privacy-policy">Política de privacidad</a>
         </form>
     </div>
 </div>
