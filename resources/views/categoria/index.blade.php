@@ -70,7 +70,37 @@
                         </div>
                     </div>
                 </div>
-                {!! $categorias->withQueryString()->links() !!}
+                {{-- Pagination Section --}}
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
+                        Mostrando {{ $categorias->firstItem() }} a {{ $categorias->lastItem() }} de {{ $categorias->total() }} registros
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {{-- Botón de Anterior --}}
+                            <li class="page-item {{ $categorias->onFirstPage() ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ $categorias->previousPageUrl() }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+
+                            {{-- Números de Página --}}
+                            @for ($i = 1; $i <= $categorias->lastPage(); $i++)
+                                <li class="page-item {{ $categorias->currentPage() == $i ? 'active' : '' }}">
+                                    <a class="page-link" href="{{ $categorias->url($i) }}">{{ $i }}</a>
+                                </li>
+                            @endfor
+
+                            {{-- Botón de Siguiente --}}
+                            <li class="page-item {{ $categorias->currentPage() == $categorias->lastPage() ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ $categorias->nextPageUrl() }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                {{-- End Pagination Section --}}
             </div>
         </div>
     </div>

@@ -48,5 +48,36 @@
                 @endforeach
             </tbody>
         </table>
+        {{-- Pagination Section --}}
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
+                Mostrando {{ $users->firstItem() }} a {{ $users->lastItem() }} de {{ $users->total() }} registros
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {{-- Botón de Anterior --}}
+                    <li class="page-item {{ $users->onFirstPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $users->previousPageUrl() }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    {{-- Números de Página --}}
+                    @for ($i = 1; $i <= $users->lastPage(); $i++)
+                        <li class="page-item {{ $users->currentPage() == $i ? 'active' : '' }}">
+                            <a class="page-link" href="{{ $users->url($i) }}">{{ $i }}</a>
+                        </li>
+                    @endfor
+
+                    {{-- Botón de Siguiente --}}
+                    <li class="page-item {{ $users->currentPage() == $users->lastPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $users->nextPageUrl() }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {{-- End Pagination Section --}}
     </div>
 @endsection
