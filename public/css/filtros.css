@@ -109,3 +109,8 @@
     margin-bottom: 5px;
     color: #ccc;
 }
+.dashboard {
+    display: flex
+;
+    width: 100%;
+}

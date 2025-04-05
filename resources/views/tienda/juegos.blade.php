@@ -2,7 +2,6 @@
 @section('content')
 
 <link href="{{ asset('css/juegos.css') }}" rel="stylesheet" />
-<link href="{{ asset('css/Dashboard.css') }}" rel="stylesheet" />
 <link href="{{ asset('css/filtros.css') }}" rel="stylesheet" />
 <div class="dashboard">
     <!--barra lateral-->
