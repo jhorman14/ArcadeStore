@@ -5,62 +5,36 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        // Obtener el usuario autenticado
         $user = Auth::user();
-
-        // Verificar si el usuario autenticado es el mismo que se está viendo
         if ($user->id != $id) {
-            // Puedes redirigir o mostrar un error si no coincide
-            return redirect()->route('/')->with('error', 'No tienes permiso para ver este perfil.');
+            return redirect()->route('inicio')->with('error', 'No tienes permiso para ver este perfil.');
         }
-
-        // Lógica para mostrar el perfil del usuario
-        return view('user.profile', compact('user'));
+        return view('profile.show', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        // Obtener el usuario autenticado
         $user = Auth::user();
-
-        // Verificar si el usuario autenticado es el mismo que se está editando
         if ($user->id != $id) {
-            // Puedes redirigir o mostrar un error si no coincide
-            return redirect()->route('home')->with('error', 'No tienes permiso para editar este perfil.');
+            return redirect()->route('inicio')->with('error', 'No tienes permiso para editar este perfil.');
         }
-
-        // Lógica para mostrar el formulario de edición del perfil
-        return view('user.edit', compact('user'));
+        return view('profile.edit', compact('user'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        // Obtener el usuario autenticado
         $user = Auth::user();
-
-        // Verificar si el usuario autenticado es el mismo que se está actualizando
         if ($user->id != $id) {
-            // Puedes redirigir o mostrar un error si no coincide
-            return redirect()->route('/')->with('error', 'No tienes permiso para editar este perfil.');
+            return redirect()->route('inicio')->with('error', 'No tienes permiso para editar este perfil.');
         }
-        
 
         $request->validate([
-            // Define tus reglas de validación para la actualización del perfil aquí
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -68,19 +42,40 @@ class UserController extends Controller
             'nick' => ['required', 'string', 'max:20'],
         ]);
 
-        $user->update( $request->all());
-
+        $user->update($request->all());
         return redirect()->route('profile.show', $user->id)->with('success', 'Perfil actualizado exitosamente.');
     }
 
     public function deactivateAccount(Request $request)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
+            
+            if (!$user) {
+                Log::error('Intento de desactivación de cuenta sin usuario autenticado');
+                return redirect()->route('inicio')->with('error', 'Usuario no encontrado.');
+            }
 
-        $user->update(['is_active' => false]);
+            // Guardar el ID del usuario antes de desactivar
+            $userId = $user->id;
 
-        Auth::logout();
+            // Actualizar el estado de la cuenta
+            $user->is_active = false;
+            $user->save();
 
-        return redirect('/')->with('success', 'Tu cuenta ha sido eliminada.');
+            // Log para debugging
+            Log::info('Cuenta desactivada para el usuario: ' . $userId);
+
+            // Cerrar la sesión
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('inicio')->with('success', 'Tu cuenta ha sido eliminada exitosamente.');
+            
+        } catch (\Exception $e) {
+            Log::error('Error al desactivar cuenta: ' . $e->getMessage());
+            return redirect()->route('inicio')->with('error', 'Ocurrió un error al eliminar la cuenta.');
+        }
     }
 }

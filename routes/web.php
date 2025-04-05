@@ -37,11 +37,10 @@ Auth::routes();
 
 // Rutas para el perfil de usuario (protegidas)
 Route::middleware('auth')->group(function () {
-    Route::get('/pedidos/create/{juego_id}', [PedidoController::class, 'create'])->name('pedidos.create');
     Route::get('/profile/{id}', [UserController::class, 'show'])->name('profile.show');
     Route::get('/profile/{id}/edit', [UserController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile/{id}', [UserController::class, 'updateProfile'])->name('profile.update');
-    Route::put('/profile/deactivate', [UserController::class, 'deactivateAccount'])->name('profile.deactivate');
+    Route::put('/profile/{id}', [UserController::class, 'update'])->name('profile.update');
+    Route::post('/profile/deactivate', [UserController::class, 'deactivateAccount'])->name('profile.deactivate'); // Cambiado a POST
     Route::get('/pedidos/create/{juego_id?}', [PedidoController::class, 'create'])->name('pedidos.create');
     Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedido.store');
     Route::get('/pedidos/gracias/{pedido}', [PedidoController::class, 'gracias'])->name('pedido.gracias');

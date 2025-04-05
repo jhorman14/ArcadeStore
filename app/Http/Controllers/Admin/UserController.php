@@ -25,12 +25,4 @@ class UserController extends Controller
             ->with('success', 'Rol del usuario actualizado exitosamente.');
     }
 
-    public function destroy(User $user)
-    {
-        $user->update(['is_active' => !$user->is_active]);
-        $status = $user->is_active ? 'activado' : 'desactivado';
-        
-        return redirect()->route('admin.users.index')
-            ->with('success', "Usuario {$status} exitosamente.");
-    }
 }

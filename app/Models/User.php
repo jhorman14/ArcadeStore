@@ -27,6 +27,7 @@ class User extends AuthenticatableBase implements Authenticatable
         'nick',
         'telefono',
         'role',
+        'is_active',
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends AuthenticatableBase implements Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
