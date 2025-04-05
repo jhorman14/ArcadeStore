@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('titulo', 50);
             $table->double('precio');
+            $table->boolean('destacado')->default(false);
             $table->text('descripcion')->nullable();
             $table->boolean('activo')->default(true);
             $table->text('requisitos_minimos')->nullable();
