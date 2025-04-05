@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PagoController;
@@ -15,6 +14,8 @@ use App\Http\Controllers\Admin\UserController as AdminUserController; // Agrega 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ContactController;
+use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
     return view('tienda.index');
@@ -26,7 +27,13 @@ Route::get('/contacto', function () {
     return view('contacto');
 })->name('contacto');
 
-Route::post('/enviar-mensaje', [ContactoController::class, 'enviarMensaje'])->name('enviar.mensaje');
+
+// En routes/web.php
+
+
+
+
+Route::post('/contactanos', [ContactController::class, 'enviarMensaje'])->name('enviar.mensaje');
 
 Route::get('/juegosDisp', [JuegoController::class, 'index'])->name('juegosDisp');
 Route::get('/juegosDisp/{juego}', [JuegoController::class, 'show'])->name('tienda.show');
