@@ -99,6 +99,7 @@ Route::prefix('admin/users')->name('admin.users.')->middleware(['auth', 'admin']
     Route::put('/{user}', [AdminUserController::class, 'update'])->name('update');
     Route::delete('/{user}', [AdminUserController::class, 'destroy'])->name('destroy');
     Route::put('/{user}/change-role', [AdminUserController::class, 'changeRole'])->name('change-role');
+    Route::put('/{user}/activate', [AdminUserController::class, 'activate'])->name('activate');
 });
 
 

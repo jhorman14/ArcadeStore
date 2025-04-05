@@ -17,7 +17,8 @@
                     <th>Email</th>
                     <th>Rol</th>
                     <th>Estado</th>
-                    <th>Acciones</th>
+                    <th>Cambiar rol</th>
+                    <th>Activar usuario</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +42,16 @@
                                     @method('PUT')
                                     <input type="hidden" name="role" value="user">
                                     <button type="submit" class="btn btn-sm btn-warning">Convertir a Usuario</button>
+                                </form>
+                            @endif
+                            </td>
+                            <td>
+
+                            @if(!$user->is_active)
+                                <form action="{{ route('admin.users.activate', $user->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-sm btn-primary w-100">Activar</button>
                                 </form>
                             @endif
                         </td>

@@ -24,5 +24,11 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success', 'Rol del usuario actualizado exitosamente.');
     }
+    public function activate(User $user)
+    {
+        $user->update(['is_active' => true]);
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Usuario activado exitosamente.');
+    }
 
 }
