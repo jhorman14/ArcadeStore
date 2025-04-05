@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container-pedido">
     <link href="{{ asset('css/pedido.css') }}" rel="stylesheet" />
     <h1>Crear Nuevo Pedido</h1>
 
