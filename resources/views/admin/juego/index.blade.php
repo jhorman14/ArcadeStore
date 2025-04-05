@@ -48,7 +48,7 @@
                                 <tbody>
                                     @foreach ($juegos as $juego)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td> {{-- Usando $loop->iteration en lugar de $i --}}
+                                            <td>{{ $loop->iteration }}</td>
                                             <td>
                                                 <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
                                                     <img src="{{ asset('images/' . $juego->imagen) }}" alt="{{ $juego->titulo }}" style="max-width: 100px; max-height: 100px; margin-bottom: 5px;">
@@ -56,22 +56,28 @@
                                                 </div>
                                             </td>
                                             <td>{{ $juego->precio }}</td>
-                                            <td>{{ $juego->descripcion }}</td>
-                                            <td>{{ $juego->requisitos_minimos }}</td>
-                                            <td>{{ $juego->requisitos_recomendados }}</td>
+                                            <td>{{ Str::limit($juego->descripcion, 50) }}</td>
+                                            <td>{{ Str::limit($juego->requisitos_minimos, 30) }}</td>
+                                            <td>{{ Str::limit($juego->requisitos_recomendados, 30) }}</td>
                                             <td>{{ $juego->categoria->nombre_categoria }}</td>
                                             <td>{{ $juego->activo ? 'Activo' : 'Inactivo' }}</td>
-                                            <td>{{ $juego->inventario ? $juego->inventario->stock : 'N/A' }}</td> {{-- Mostrar stock o N/A si no existe --}}
+                                            <td>{{ $juego->inventario ? $juego->inventario->stock : 'N/A' }}</td>
                                             <td>
+                                                <form action="{{ route('admin.juegos.destacar', $juego->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-{{ $juego->destacado ? 'warning' : 'info' }}" title="{{ $juego->destacado ? 'Quitar de destacados' : 'Marcar como destacado' }}">
+                                                        <i class="fa fa-star{{ $juego->destacado ? '' : '-o' }}"></i> {{ $juego->destacado ? 'Quitar Destacado' : 'Destacar' }}
+                                                    </button>
+                                                </form>
+                                                <a class="btn btn-sm btn-success" href="{{ route('juegos.edit', $juego->id) }}" title="Editar"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                                 <form action="{{ route('juegos.destroy', $juego->id) }}" method="POST" class="d-inline">
-                                                    <a class="btn btn-sm btn-success" href="{{ route('juegos.edit', $juego->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                                     @csrf
                                                     @method('DELETE')
                                                     @php
                                                         $confirmMessage = '¿Estás seguro de que quieres ' . ($juego->activo ? 'desactivar' : 'activar') . ' este juego?';
                                                     @endphp
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('{{ $confirmMessage }}')">
-                                                        {{ $juego->activo ? 'Desactivar' : 'Activar' }}
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="{{ $juego->activo ? 'Desactivar' : 'Activar' }}" onclick="return confirm('{{ $confirmMessage }}')">
+                                                        <i class="fa fa-power-off"></i> {{ $juego->activo ? 'Desactivar' : 'Activar' }}
                                                     </button>
                                                 </form>
                                             </td>
@@ -95,14 +101,14 @@
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
-                
+
                             {{-- Números de Página --}}
                             @for ($i = 1; $i <= $juegos->lastPage(); $i++)
                                 <li class="page-item {{ $juegos->currentPage() == $i ? 'active' : '' }}">
                                     <a class="page-link" href="{{ $juegos->url($i) }}">{{ $i }}</a>
                                 </li>
                             @endfor
-                
+
                             {{-- Botón de Siguiente --}}
                             <li class="page-item {{ $juegos->currentPage() == $juegos->lastPage() ? 'disabled' : '' }}">
                                 <a class="page-link" href="{{ $juegos->nextPageUrl() }}" aria-label="Next">

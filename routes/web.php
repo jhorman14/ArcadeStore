@@ -17,9 +17,9 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Mail;
 
-Route::get('/', function () {
-    return view('tienda.index');
-})->name('inicio');
+use App\Http\Controllers\InicioController; // Asegúrate de importar tu controlador
+
+Route::get('/', [InicioController::class, 'index'])->name('inicio');
 Route::get('/juegosDisp', function () {
     return view('tienda.juegos');
 });
@@ -90,6 +90,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 // Rutas para admin/juegos - Usando el controlador AdminJuegoController
 Route::prefix('admin/juegos')->name('admin.juegos.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminJuegoController::class, 'index'])->name('index');
+    Route::post('/{juego}/destacar', [AdminJuegoController::class, 'destacar'])->name('destacar');
     Route::get('/crear', [AdminJuegoController::class, 'create'])->name('crear');
     Route::post('/store', [AdminJuegoController::class, 'store'])->name('store');
     Route::get('/{juego}/editar', [AdminJuegoController::class, 'edit'])->name('editar');

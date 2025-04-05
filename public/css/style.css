@@ -163,34 +163,6 @@ a:focus {
   background-size: 55px;
 }
 
-/*end header section*/
-/* slider section */
-.slide1{
-background-image: url(../images/hero.jpg);
-padding: 6% 0;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.slide2{
-background-image: url(../images/hero1.jpg);
-padding: 6% 0;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-.slide3{
-background-image: url(../images/hero2.jpg);
-padding: 6% 0;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-.slide4{
-background-image: url(../images/hero3.jpg);
-padding: 6% 0;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
 .slider_section .row {
   -webkit-box-align: center;
       -ms-flex-align: center;

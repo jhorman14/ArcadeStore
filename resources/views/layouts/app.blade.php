@@ -128,11 +128,63 @@
       </div>
     </header>
 
-
+<div>
     <main class="py-4">
       @yield('content')
     </main>
   </div>
+
+  <!-- info section -->
+  <section class="info_section layout_padding2">
+    <div class="container">
+      <div class="info_items">
+        <a href="">
+          <div class="item ">
+            <div class="img-box box-1">
+              <img src="" alt="">
+            </div>
+            <div class="detail-box">
+              <p>
+                SENA
+                CALLE 13 # 65-10
+              </p>
+            </div>
+          </div>
+        </a>
+        <a href="">
+          <div class="item ">
+            <div class="img-box box-2">
+              <img src="" alt="">
+            </div>
+            <div class="detail-box">
+              <p>
+                +57 3143575304
+              </p>
+            </div>
+          </div>
+        </a>
+        <a href="">
+          <div class="item ">
+            <div class="img-box box-3">
+              <img src="" alt="">
+            </div>
+            <div class="detail-box">
+              <p>
+                arcadestore@gmail.com
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- end info_section -->
+  <!-- footer section-->
+  <section class="container-fluid footer_section">
+    <p> 2024 ALL Rights Reserved By Scrum 3 - SENA-CSF</p>
+  </section>
+  <!-- footer section -->
   <script src="{{ asset('js/filtros.js') }}"></script>
   <script type="text/javascript" src="{{ asset('js/jquery-3.4.1.min.js') }}"></script>
   <script type="text/javascript" src="{{ asset('js/bootstrap.js') }}"></script>
