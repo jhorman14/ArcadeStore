@@ -16,7 +16,9 @@ class VentaController extends Controller
      */
     public function index(Request $request): View
     {
-        $ventas = Venta::paginate();
+        $ventas = Venta::with(['juego', 'user', 'pedido']) // Load relationships
+            ->orderBy('fecha_venta', 'desc')
+            ->paginate(15);
 
         return view('venta.index', compact('ventas'))
             ->with('i', ($request->input('page', 1) - 1) * $ventas->perPage());
@@ -48,7 +50,12 @@ class VentaController extends Controller
      */
     public function show($id): View
     {
-        $venta = Venta::find($id);
+        $venta = Venta::with(['juego', 'user', 'pedido'])->find($id);
+
+        // Manejo si la venta no se encuentra
+        if (!$venta) {
+            abort(404, 'Venta no encontrada.');
+        }
 
         return view('venta.show', compact('venta'));
     }
@@ -58,8 +65,13 @@ class VentaController extends Controller
      */
     public function edit($id): View
     {
-        $venta = Venta::find($id);
+        $venta = Venta::with(['juego', 'user', 'pedido'])->find($id);
 
+         // Manejo si la venta no se encuentra
+        if (!$venta) {
+            abort(404, 'Venta no encontrada.');
+        }
+        
         return view('venta.edit', compact('venta'));
     }
 

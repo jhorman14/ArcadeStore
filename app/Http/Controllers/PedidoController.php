@@ -9,6 +9,7 @@ use App\Models\Juego; // Asegúrate de importar el modelo Juego
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\PedidoRequest;
+use App\Models\Venta; // Import the Venta model
 
 class PedidoController extends Controller
 {
@@ -22,51 +23,54 @@ class PedidoController extends Controller
      * Store a newly created resource in storage (simulando pago exitoso y creando pedido).
      */
     public function store(PedidoRequest $request)
-{
-    Log::info('Datos del formulario completo recibidos: ' . json_encode($request->all()));
+    {
+        Log::info('Datos del formulario completo recibidos: ' . json_encode($request->all()));
 
-    $pagoExitoso = true;
+        $pagoExitoso = true;
 
-    if ($pagoExitoso) {
-        DB::beginTransaction();
-        try {
-            $juego = Juego::findOrFail($request->id_juego);
-            $totalPedido = $juego->precio;
+        if ($pagoExitoso) {
+            DB::beginTransaction();
+            try {
+                $juego = Juego::findOrFail($request->id_juego);
+                $totalPedido = $juego->precio;
 
-            $pedidoData = [
-                'id_usuario' => auth()->id(),
-                'fecha_pedido' => now(),
-                'estado_pedido' => 'Completado',
-                'id_juego' => $request->id_juego,
-            ];
-            
-            $pedido = Pedido::create($pedidoData);
+                $pedidoData = [
+                    'id_usuario' => auth()->id(),
+                    'fecha_pedido' => now(),
+                    'estado_pedido' => 'Completado',
+                    'id_juego' => $request->id_juego,
+                ];
 
-            $pagoData = [
-                'total' => $totalPedido,
-                'id_pedido' => $pedido->id,
-                'metodo_de_pago' => $request->metodo_de_pago,
-            ];
-            
-            $pago = Pago::create($pagoData);
+                $pedido = Pedido::create($pedidoData);
 
-            DB::commit();
-            $inventarioController = app(InventarioController::class);
-            $inventarioController->reducirStock($request);
-            
-            return redirect()->route('pedido.gracias', $pedido)
-                           ->with('success', 'Pedido creado exitosamente');
+                $pagoData = [
+                    'total' => $totalPedido,
+                    'id_pedido' => $pedido->id,
+                    'metodo_de_pago' => $request->metodo_de_pago,
+                ];
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error al crear pedido y pago: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-            return back()->withInput()->withErrors(['error' => 'Hubo un error al crear el pedido: ' . $e->getMessage()]);
+                $pago = Pago::create($pagoData);
+
+                // Create a Venta record
+                Venta::createFromPedido($pedido); // Use the new method
+
+                DB::commit();
+                $inventarioController = app(InventarioController::class);
+                $inventarioController->reducirStock($request);
+
+                return redirect()->route('pedido.gracias', $pedido)
+                    ->with('success', 'Pedido creado exitosamente');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Error al crear pedido y pago: ' . $e->getMessage());
+                Log::error('Stack trace: ' . $e->getTraceAsString());
+                return back()->withInput()->withErrors(['error' => 'Hubo un error al crear el pedido: ' . $e->getMessage()]);
+            }
         }
+
+        return back()->withInput()->withErrors(['error' => 'El pago simulado no fue exitoso.']);
     }
-    
-    return back()->withInput()->withErrors(['error' => 'El pago simulado no fue exitoso.']);
-}
 
 
     /**

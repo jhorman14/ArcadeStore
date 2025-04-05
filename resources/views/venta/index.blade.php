@@ -15,16 +15,10 @@
                             <span id="card_title">
                                 {{ __('Ventas') }}
                             </span>
-
-                             <div class="float-right">
-                                <a href="{{ route('ventas.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
-                                </a>
-                              </div>
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
-                        <div class="alert alert-success m-4">
+                        <div class="alert alert-success">
                             <p>{{ $message }}</p>
                         </div>
                     @endif
@@ -36,9 +30,10 @@
                                     <tr>
                                         <th>No</th>
                                         
-									<th >Fecha Venta</th>
-									<th >Id Usuario</th>
-									<th >Id Juego</th>
+										<th>Fecha Venta</th>
+										<th>Usuario</th>
+										<th>Juego</th>
+                                        <th>Pedido</th>
 
                                         <th></th>
                                     </tr>
@@ -48,17 +43,14 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-										<td >{{ $venta->fecha_venta }}</td>
-										<td >{{ $venta->id_usuario }}</td>
-										<td >{{ $venta->id_juego }}</td>
+											<td>{{ $venta->fecha_venta }}</td>
+											<td>{{ $venta->user->name }}</td>
+											<td>{{ $venta->juego->titulo }}</td>
+                                            <td>{{ $venta->pedido ? $venta->pedido->id : 'N/A' }}</td>
 
                                             <td>
-                                                <form action="{{ route('ventas.destroy', $venta->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('ventas.show', $venta->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('ventas.edit', $venta->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                <form action="{{ route('ventas.destroy',$venta->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary " href="{{ route('ventas.show',$venta->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
                                                 </form>
                                             </td>
                                         </tr>
@@ -68,7 +60,7 @@
                         </div>
                     </div>
                 </div>
-                {!! $ventas->withQueryString()->links() !!}
+                {!! $ventas->links() !!}
             </div>
         </div>
     </div>

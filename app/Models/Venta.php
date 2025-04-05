@@ -21,31 +21,32 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Venta extends Model
 {
-    
     protected $perPage = 20;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['fecha_venta', 'id_usuario', 'id_juego'];
+    protected $fillable = ['fecha_venta', 'id_usuario', 'id_juego', 'id_pedido']; // Add id_pedido
 
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function juego()
     {
-        return $this->belongsTo(\App\Models\Juego::class, 'id_juego', 'id');
+        return $this->belongsTo(Juego::class, 'id_juego', 'id');
     }
-    
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class, 'id_usuario', 'id');
+        return $this->belongsTo(User::class, 'id_usuario', 'id');
     }
-    
+
+    public function pedido()
+    {
+        return $this->belongsTo(Pedido::class, 'id_pedido', 'id');
+    }
+
+    public static function createFromPedido(Pedido $pedido)
+    {
+        return self::create([
+            'fecha_venta' => now(),
+            'id_usuario' => $pedido->id_usuario,
+            'id_juego' => $pedido->id_juego,
+            'id_pedido' => $pedido->id,
+        ]);
+    }
 }

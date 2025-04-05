@@ -25,12 +25,16 @@
                                     {{ $venta->fecha_venta }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Id Usuario:</strong>
-                                    {{ $venta->id_usuario }}
+                                    <strong>Usuario:</strong>
+                                    {{ $venta->user->name }}
                                 </div>
                                 <div class="form-group mb-2 mb20">
-                                    <strong>Id Juego:</strong>
-                                    {{ $venta->id_juego }}
+                                    <strong>Juego:</strong>
+                                    {{ $venta->juego->titulo }}
+                                </div>
+                                <div class="form-group mb-2 mb20">
+                                    <strong>Pedido:</strong>
+                                    {{ $venta->pedido ? $venta->pedido->id : 'N/A' }}
                                 </div>
 
                     </div>
