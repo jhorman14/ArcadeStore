@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+<link href="{{ asset('css/pedido.css') }}" rel="stylesheet" />
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card">
+                <div class="card-ped">
                     <div class="card-header">Gracias por tu compra</div>
 
-                    <div class="card-body">
+                    <div class="card-body-ped">
                         @if (session('success'))
                             <div class="alert alert-success" role="alert">
                                 {{ session('success') }}
