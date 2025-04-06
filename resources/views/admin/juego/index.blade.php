@@ -14,8 +14,9 @@
                         <span id="card_title">
                             {{ __('Juegos') }}
                         </span>
-                        <div class="float-right">
-                            <a href="{{ route('juegos.create') }}" class="btn btn-primary btn-sm float-right" data-placement="left">
+                        <div style="display: flex; align-items: center;"> {{-- Container for the buttons --}}
+                            <a class="btn btn-primary btn-sm mr-2" href="dashboard"> {{ __('Back') }}</a> {{-- Added mr-2 for spacing --}}
+                            <a href="{{ route('juegos.create') }}" class="btn btn-primary btn-sm" data-placement="left">
                                 {{ __('Crear Nuevo') }}
                             </a>
                         </div>

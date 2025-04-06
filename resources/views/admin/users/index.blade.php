@@ -14,6 +14,9 @@
                         <span id="card_title">
                             {{ __('Juegos') }}
                         </span>
+                        <div class="float-right">
+                            <a class="btn btn-primary btn-sm" href="dashboard"> {{ __('Back') }}</a>
+                        </div>
                     </div>
                 </div>
                 
