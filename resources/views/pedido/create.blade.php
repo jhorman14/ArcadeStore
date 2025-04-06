@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-pedido">
     <link href="{{ asset('css/pedido.css') }}" rel="stylesheet" />
-    <h1>Crear Nuevo Pedido</h1>
+    <h1 class="header-title">Crear Nuevo Pedido</h1>
 
     @if ($errors->any())
     <div class="alert alert-danger">
