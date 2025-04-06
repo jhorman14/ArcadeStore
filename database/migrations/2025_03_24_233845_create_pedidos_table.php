@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('estado_pedido', 50);
             $table->unsignedBigInteger('id_usuario');
             $table->unsignedBigInteger('id_juego');
+            $table->integer('cantidad')->default(1);
             $table->timestamps();
 
             $table->foreign('id_usuario')->references('id')->on('users');
