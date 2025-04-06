@@ -97,11 +97,11 @@
                     @foreach ($juegosComprados as $juego)
                         <div class="col-md-4 mb-4">
                             <div class="card">
-                                <div class="card-body">
+                                <div class="card-body bg-white">
                                     <h5 class="card-title">{{ $juego->titulo }}</h5>
                                     <p class="card-text">Precio: ${{ number_format($juego->precio, 2) }}</p>
                                     <p class="card-text">¡Ya tienes este juego!</p>
-                                    <a href="{{ route('tienda.show', $juego->id) }}" class="btn btn-secondary">Ver Detalles del Juego</a>
+                                    <a href="{{ route('tienda.show', $juego->id) }}" class="btn btn-primary">Ver Detalles del Juego</a>
                                 </div>
                             </div>
                         </div>

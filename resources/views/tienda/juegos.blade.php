@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('content')
 
+@section('content')
 <link href="{{ asset('css/juegos.css') }}" rel="stylesheet" />
 <link href="{{ asset('css/filtros.css') }}" rel="stylesheet" />
 <div class="dashboard">

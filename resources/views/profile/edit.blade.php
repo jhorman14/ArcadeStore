@@ -9,7 +9,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card shadow">
-                    <div class="card-header bg-secondary text-white">
+                    <div class="card-header text-white">
                         <h3 class="mb-0">{{ __('Editar Mi Perfil') }}</h3>
                     </div>
 
@@ -75,8 +75,8 @@
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ route('profile.show', $user->id) }}" class="btn btn-secondary">{{ __('Cancelar') }}</a>
-                                <button type="submit" class="btn btn-primary">{{ __('Guardar Cambios') }}</button>
+                                <a href="{{ route('profile.show', $user->id) }}" class="btn btn-info">{{ __('Cancelar') }}</a>
+                                <button type="submit" class="btn btn-success">{{ __('Guardar Cambios') }}</button>
                             </div>
                         </form>
                     </div>

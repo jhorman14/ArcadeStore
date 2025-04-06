@@ -5,34 +5,36 @@
 @endsection
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white" style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 class="mb-0">{{ __('Mi Perfil') }}</h3>
-                        <a class="btn btn-light btn-sm" href="{{ route('inicio') }}"> {{ __('Back') }}</a>
+                <div class="card">
+                    <div class="card-header text-white" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span id="card_title" style="font-size: 33px">
+                        {{ __('Perfil') }}
+                            </span>
+                        <a class="btn btn-primary btn-sm" href="{{ route('inicio') }}"> {{ __('Back') }}</a>
                     </div>
 
                     <div class="card-body bg-white py-4">
                         <div class="mb-3">
-                            <label for="name" class="form-label fw-bold">{{ __('Nombre') }}:</label>
-                            <p class="form-control-plaintext">{{ $user->name }}</p>
+                            <label for="name" class="form-label fw-bold" style="font-size: 22px">{{ __('Nombre') }}:</label>
+                            <p>{{ $user->name }}</p>
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label fw-bold">{{ __('Correo Electrónico') }}:</label>
-                            <p class="form-control-plaintext">{{ $user->email }}</p>
+                            <label for="email" class="form-label fw-bold" style="font-size: 22px">{{ __('Correo Electrónico') }}:</label>
+                            <p>{{ $user->email }}</p>
                         </div>
 
                         <div class="mb-3">
-                            <label for="nick" class="form-label fw-bold">{{ __('Nick') }}:</label>
-                            <p class="form-control-plaintext">{{ $user->nick }}</p>
+                            <label for="nick" class="form-label fw-bold" style="font-size: 22px">{{ __('Nick') }}:</label>
+                            <p>{{ $user->nick }}</p>
                         </div>
 
                         <div class="mb-3">
-                            <label for="telefono" class="form-label fw-bold">{{ __('Teléfono') }}:</label>
-                            <p class="form-control-plaintext">{{ $user->telefono }}</p>
+                            <label for="telefono" class="form-label fw-bold" style="font-size: 22px">{{ __('Teléfono') }}:</label>
+                            <p>{{ $user->telefono }}</p>
                         </div>
 
                         <div class="mt-4 d-grid gap-2">
