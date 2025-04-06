@@ -11,7 +11,7 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white" style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 class="mb-0">{{ __('Mi Perfil') }}</h3>
-                        <a class="btn btn-light btn-sm" href="{{ route('inicio') }}"> {{ __('Volver') }}</a>
+                        <a class="btn btn-light btn-sm" href="{{ route('inicio') }}"> {{ __('Back') }}</a>
                     </div>
 
                     <div class="card-body bg-white py-4">

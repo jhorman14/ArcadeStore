@@ -11,7 +11,7 @@
                             {{ __('Ventas') }}
                         </span>
                         <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="dashboard"> {{ __('Back') }}</a>
+                            <a class="btn btn-primary btn-sm" href="/profile/{id}"> {{ __('Back') }}</a>
                         </div>
                     </div>
                 </div>
