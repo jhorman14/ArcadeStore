@@ -8,48 +8,48 @@
     @endif
 
     <section class=" slider_section position-relative">
-        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-                @foreach ($juegosDestacados as $index => $juego)
-                    <li data-target="#carouselExampleIndicators" data-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }}"></li>
-                @endforeach
-            </ol>
-            <div class="carousel-inner">
-                @foreach ($juegosDestacados as $index => $juego)
-                    <div class="carousel-item {{ $index == 0 ? 'active' : '' }} slide{{ $index + 1 }}">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-4 offset-md-2">
-                                    <div class="slider_detail-box">
-                                        <h1>
-                                            {{ $juego->titulo }}
-                                            <br>
-                                            <span>
-                                                {{ $juego->categoria->nombre_categoria ?? 'Sin Categoría' }}
-                                            </span>
-                                        </h1>
-                                        <p>
-                                            {{ Str::limit($juego->descripcion, 200) }}
-                                        </p>
-                                        <div class="btn-box">
-                                            <a href="{{ route('tienda.show', $juego->id) }}" class="btn-1">
-                                                Compra ahora
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="slider_img-box">
-                                        <img src="{{ asset('images/' . $juego->imagen) }}" alt="{{ $juego->titulo }}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
+      <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+          <ol class="carousel-indicators">
+              @foreach ($juegosDestacados as $index => $juego)
+                  <li data-target="#carouselExampleIndicators" data-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }}"></li>
+              @endforeach
+          </ol>
+          <div class="carousel-inner">
+              @foreach ($juegosDestacados as $index => $juego)
+              <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                  <div class="carousel-item-background" style="background-image: url('{{ asset('images/' . $juego->imagen) }}');"></div>
+                      <div class="container-fluid">
+                          <div class="row">
+                              <div class="col-md-4 offset-md-2">
+                                  <div class="slider_detail-box">
+                                    <h1 style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">
+                                      {{ $juego->titulo }}
+                                      <br>
+                                      <span>
+                                          {{ $juego->categoria->nombre_categoria ?? 'Sin Categoría' }}
+                                      </span>
+                                  </h1>
+                                  <p style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);">
+                                      {{ Str::limit($juego->descripcion, 200) }}
+                                  </p>
+                                      <div class="btn-box">
+                                          <a href="{{ route('tienda.show', $juego->id) }}" class="btn-1">
+                                              Compra ahora
+                                          </a>
+                                      </div>
+                                  </div>
+                              </div>                                <div class="col-md-6">
+                                  <div class="slider_img-box">
+                                      <img src="{{ asset('images/' . $juego->imagen) }}" alt="{{ $juego->titulo }}"style=" background-size: cover; background-position: center; background-repeat: no-repeat; height: 700px;">
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              @endforeach
+          </div>
+      </div>
+  </section>
     <br>
     <br>
     <br>
