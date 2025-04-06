@@ -15,7 +15,7 @@ class JuegoController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Juego::query()->where('activo', true);
+        $query = Juego::query()->where('activo', 1);
         $adquiridosQuery = null;
         $juegosAdquiridosIds = [];
         $juegosAdquiridos = collect(); // Initialize as an empty Collection
@@ -70,10 +70,16 @@ class JuegoController extends Controller
     public function show($id): View
     {
         $juego = Juego::findOrFail($id);
+        
+        if (!$juego || !$juego->activo) {
+            return redirect()->route('tienda.juegos')->with('error', 'Juego no encontrado o no disponible.');
+        }
+        
         $comprado = false;
         if (auth()->check()) {
             $comprado = auth()->user()->juegosComprados()->where('juegos.id', $juego->id)->exists();
         }
+        
         return view('tienda.show', compact('juego', 'comprado'));
     }
 

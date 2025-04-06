@@ -11,8 +11,8 @@ class InicioController extends Controller
     {
         // Obtén los juegos que quieres mostrar en la página de inicio
         // Puedes usar diferentes criterios (los más recientes, destacados, etc.)
-        $juegosDestacados = Juego::where('destacado', true)->with('categoria')->take(4)->get();
-        $juegosRecientes = Juego::orderBy('created_at', 'desc')->take(3)->get(); // Ejemplo: 3 juegos más recientes
+        $juegosDestacados = Juego::where('destacado', true)->where('activo', true)->with('categoria')->take(4)->get();
+        $juegosRecientes = Juego::where('activo', true)->orderBy('created_at', 'desc')->take(3)->get(); // Ejemplo: 3 juegos más recientes
 
         // Pasa los juegos a la vista
         return view('tienda.index', compact('juegosDestacados', 'juegosRecientes'));
