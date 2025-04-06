@@ -3,82 +3,181 @@
 namespace App\Http\Controllers;
 
 use App\Models\Intercambio;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Juego;
 use Illuminate\Http\Request;
-use App\Http\Requests\IntercambioRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use App\Models\Pedido;
+use App\Models\Pago;
+use App\Models\Venta;
+use Illuminate\Support\Facades\Log;
 
 class IntercambioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request): View
+    public function solicitarIntercambio(Request $request, Juego $juegoSolicitado)
     {
-        $intercambios = Intercambio::paginate();
+        if (!Auth::check()) {
+            return Redirect::route('login')->with('error', 'Debes iniciar sesión para solicitar un intercambio.');
+        }
 
-        return view('intercambio.index', compact('intercambios'))
-            ->with('i', ($request->input('page', 1) - 1) * $intercambios->perPage());
+        $request->validate([
+            'juego_ofrecido_id' => 'required|exists:juegos,id',
+        ]);
+
+        $juegoOfrecidoId = $request->input('juego_ofrecido_id');
+        $juegoOfrecido = Juego::findOrFail($juegoOfrecidoId);
+        $usuario = Auth::user();
+
+        if (!$usuario->juegosComprados->contains($juegoOfrecido)) {
+            return Redirect::back()->with('error', 'El juego ofrecido no pertenece a tu biblioteca.');
+        }
+
+        if ($juegoSolicitado->id === $juegoOfrecido->id) {
+            return Redirect::back()->with('error', 'No puedes intercambiar el mismo juego por sí mismo.');
+        }
+
+        $precioSolicitado = $juegoSolicitado->precio;
+        $precioOfrecido = $juegoOfrecido->precio;
+        $costoAdicional = 0;
+
+        DB::beginTransaction();
+
+        try {
+            $intercambio = new Intercambio();
+            $intercambio->estado_intercambio = 'Pendiente';
+            $intercambio->fecha_intercambio = now()->toDateString();
+            $intercambio->id_producto_solicitado = $juegoSolicitado->id;
+            $intercambio->id_producto_ofrecido = $juegoOfrecido->id;
+            $intercambio->save();
+
+            if ($precioSolicitado > $precioOfrecido) {
+                $diferencia = $precioSolicitado - $precioOfrecido;
+                $costoAdicional = $diferencia * 1.20;
+                DB::commit();
+                return Redirect::route('intercambio.pendiente-pago', $intercambio)->with('costo_adicional', $costoAdicional);
+            } elseif ($precioSolicitado < $precioOfrecido) {
+                $intercambio->estado_intercambio = 'Aprobado';
+                $intercambio->save();
+                $usuario->juegosComprados()->detach($juegoOfrecido->id);
+                $usuario->juegosComprados()->attach($juegoSolicitado->id);
+                DB::commit();
+                return Redirect::route('usuario.intercambios')->with('success', 'Intercambio solicitado y aprobado.');
+            } else {
+                $costoAdicional = $precioSolicitado * 0.20;
+                DB::commit();
+                return Redirect::route('intercambio.pendiente-pago', $intercambio)->with('costo_adicional', $costoAdicional);
+            }
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with('error', 'Hubo un error al solicitar el intercambio: ' . $e->getMessage());
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): View
+    public function mostrarFormularioIntercambio(Juego $juego)
     {
-        $intercambio = new Intercambio();
+        if (!Auth::check()) {
+            return Redirect::route('login')->with('error', 'Debes iniciar sesión para solicitar un intercambio.');
+        }
 
-        return view('intercambio.create', compact('intercambio'));
+        $juegosComprados = Auth::user()->juegosComprados;
+
+        $juegosOfrecidos = $juegosComprados->reject(function ($item) use ($juego) {
+            return $item->id === $juego->id;
+        });
+
+        return view('tienda.intercambio', compact('juego', 'juegosOfrecidos'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(IntercambioRequest $request): RedirectResponse
+    public function pendientePago(\App\Models\Intercambio $intercambio)
     {
-        Intercambio::create($request->validated());
+        $costoAdicional = session('costo_adicional');
 
-        return Redirect::route('intercambios.index')
-            ->with('success', 'Intercambio created successfully.');
+        if (!$costoAdicional) {
+            return Redirect::route('usuario.intercambios')->with('error', 'Información de pago adicional no encontrada.');
+        }
+
+        return view('tienda.intercambio-pago', compact('intercambio', 'costoAdicional'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id): View
+    public function procesarPagoIntercambio(Request $request, \App\Models\Intercambio $intercambio)
     {
-        $intercambio = Intercambio::find($id);
+        if ($intercambio->id_producto_ofrecido !== auth()->user()->juegosComprados()->pluck('juegos.id')->first()) {
+            return Redirect::route('usuario.intercambios')->with('error', 'No estás autorizado para procesar el pago de este intercambio.');
+        }
 
-        return view('intercambio.show', compact('intercambio'));
+        $costoAdicional = session('costo_adicional');
+        $montoPagado = $request->input('monto');
+
+        if (!$costoAdicional || $montoPagado != $costoAdicional) {
+            return Redirect::back()->with('error', 'El monto pagado no coincide con el costo adicional.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $pagoExitoso = true;
+
+            if ($pagoExitoso) {
+                $intercambio->estado_intercambio = 'Completado';
+                $intercambio->save();
+
+                $usuario = auth()->user();
+                $juegoSolicitado = $intercambio->productoSolicitado;
+                $juegoOfrecido = $intercambio->productoOfrecido;
+
+                $usuario->juegosComprados()->detach($juegoOfrecido->id);
+                $usuario->juegosComprados()->attach($juegoSolicitado->id);
+
+                $pedidoData = [
+                    'id_usuario' => $usuario->id,
+                    'fecha_pedido' => now(),
+                    'estado_pedido' => 'Completado (Intercambio)',
+                    'id_juego' => $juegoSolicitado->id,
+                ];
+                $pedido = Pedido::create($pedidoData);
+
+                $pagoData = [
+                    'total' => $costoAdicional,
+                    'id_pedido' => $pedido->id,
+                    'metodo_de_pago' => 'Intercambio (Pago Adicional)',
+                ];
+                Pago::create($pagoData);
+
+                Venta::createFromPedido($pedido);
+
+                DB::commit();
+
+                session()->forget('costo_adicional');
+
+                return Redirect::route('usuario.intercambios')->with('success', 'Pago adicional procesado. Intercambio completado.');
+            } else {
+                DB::rollBack();
+                return Redirect::back()->with('error', 'El pago simulado falló.');
+            }
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al procesar el pago del intercambio: ' . $e->getMessage());
+            return Redirect::back()->with('error', 'Hubo un error al procesar el pago del intercambio.');
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id): View
+    public function listarIntercambios()
     {
-        $intercambio = Intercambio::find($id);
+        if (!Auth::check()) {
+            return Redirect::route('login')->with('error', 'Debes iniciar sesión para ver tus intercambios.');
+        }
 
-        return view('intercambio.edit', compact('intercambio'));
-    }
+        $usuario = Auth::user();
+        $intercambios = Intercambio::where(function ($query) use ($usuario) {
+            $query->where('id_producto_solicitado', function ($q) use ($usuario) {
+                $q->select('id')->from('juegos')->whereIn('id', $usuario->juegosComprados()->pluck('juegos.id'));
+            })->orWhere('id_producto_ofrecido', function ($q) use ($usuario) {
+                $q->select('id')->from('juegos')->whereIn('id', $usuario->juegosComprados()->pluck('juegos.id'));
+            });
+        })->latest()->paginate(10);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(IntercambioRequest $request, Intercambio $intercambio): RedirectResponse
-    {
-        $intercambio->update($request->validated());
-
-        return Redirect::route('intercambios.index')
-            ->with('success', 'Intercambio updated successfully');
-    }
-
-    public function destroy($id): RedirectResponse
-    {
-        Intercambio::find($id)->delete();
-
-        return Redirect::route('intercambios.index')
-            ->with('success', 'Intercambio deleted successfully');
+        return view('usuario.intercambios', compact('intercambios'));
     }
 }

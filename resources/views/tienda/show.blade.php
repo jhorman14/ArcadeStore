@@ -14,10 +14,33 @@
             <div class="container">
                 <div class="detalle-juego-actions">
                     @if ($comprado)
-                        <a href="{{-- Aquí iría la URL de descarga o juego --}}" class="btn btn-primary">Descargar y jugar</a>
+                    <a href="{{-- Aquí iría la URL de descarga o juego --}}" class="btn btn-primary">Descargar y jugar</a>
                     @else
-                        <a href="{{ route('pedidos.create', ['juego_id' => $juego->id]) }}" class="btn btn-success">Comprar ahora</a>
+                    <a href="{{ route('pedidos.create', ['juego_id' => $juego->id]) }}" class="btn btn-success">Comprar ahora</a>
                     @endif
+                    @auth
+                    <h3>Intercambiar por este juego</h3>
+                    <form action="{{ route('intercambio.solicitar', $juego) }}" method="POST">
+                        @csrf
+                        <div>
+                            <label for="juego_ofrecido_id">Selecciona un juego de tu biblioteca para ofrecer:</label>
+                            <select name="juego_ofrecido_id" id="juego_ofrecido_id" class="form-control">
+                                <option value="">-- Selecciona un juego --</option>
+                                @foreach (auth()->user()->juegosComprados as $juegoOfrecido)
+                                @if ($juegoOfrecido->id !== $juego->id)
+                                <option value="{{ $juegoOfrecido->id }}">{{ $juegoOfrecido->titulo }} (Precio: ${{ $juegoOfrecido->precio }})</option>
+                                @endif
+                                @endforeach
+                            </select>
+                            @error('juego_ofrecido_id')
+                            <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Solicitar Intercambio</button>
+                    </form>
+                    @else
+                    <p>Debes <a href="{{ route('login') }}">iniciar sesión</a> para realizar un intercambio.</p>
+                    @endauth
                 </div>
             </div>
         </div>
