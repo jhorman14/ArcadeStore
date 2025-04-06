@@ -52,12 +52,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/pedidos/gracias/{pedido}', [PedidoController::class, 'gracias'])->name('pedido.gracias');
     Route::get('/pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
-    Route::get('/juegos/{juego}/intercambiar', [IntercambioController::class, 'mostrarFormularioIntercambio'])->name('intercambio.formulario');
-    Route::post('/juegos/{juego}/solicitar-intercambio', [IntercambioController::class, 'solicitarIntercambio'])->name('intercambio.solicitar');
-    Route::get('/intercambios/pendiente-pago/{intercambio}', [IntercambioController::class, 'pendientePago'])->name('intercambio.pendiente-pago');
-    Route::post('/intercambios/procesar-pago/{intercambio}', [IntercambioController::class, 'procesarPagoIntercambio'])->name('intercambio.procesar-pago');
+    // Intercambios
+    Route::get('/intercambio/{juego}/formulario', [IntercambioController::class, 'mostrarFormularioIntercambio'])->name('intercambio.formulario');
+    Route::post('/intercambio/{juego}/solicitar', [IntercambioController::class, 'solicitarIntercambio'])->name('intercambio.solicitar');
+    Route::get('/intercambio/pendiente-pago/{intercambio}', [IntercambioController::class, 'pendientePago'])->name('intercambio.pendiente-pago');
+    Route::post('/intercambio/procesar-pago/{intercambio}', [IntercambioController::class, 'procesarPagoIntercambio'])->name('intercambio.procesar-pago');
     Route::get('/usuario/intercambios', [IntercambioController::class, 'listarIntercambios'])->name('usuario.intercambios');
 });
+
+
+
+
+
 
 // Rutas para los recursos (CRUD)
 Route::resource('pagos', PagoController::class)->middleware('auth');

@@ -15,14 +15,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property $created_at
  * @property $updated_at
  *
- * @property Juego $juego
- * @property Juego $juego
+ * @property Juego $productoSolicitado
+ * @property Juego $productoOfrecido
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Intercambio extends Model
 {
-    
     protected $perPage = 20;
 
     /**
@@ -32,16 +31,19 @@ class Intercambio extends Model
      */
     protected $fillable = ['estado_intercambio', 'fecha_intercambio', 'id_producto_solicitado', 'id_producto_ofrecido'];
 
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function juego()
+    public function productoSolicitado()
     {
-        return $this->belongsTo(\App\Models\Juego::class, 'id_producto_ofrecido', 'id');
+        return $this->belongsTo(Juego::class, 'id_producto_solicitado', 'id');
     }
     
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    public function productoOfrecido()
+    {
+        return $this->belongsTo(Juego::class, 'id_producto_ofrecido', 'id');
+    }
 }

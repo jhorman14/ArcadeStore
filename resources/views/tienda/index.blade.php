@@ -16,7 +16,7 @@
             </ol>
             <div class="carousel-inner">
                 @foreach ($juegosDestacados as $index => $juego)
-                      <div class="carousel-item {{ $index == 0 ? 'active' : '' }}" style="background-image: url('{{ asset('images/' . $juego->imagen) }}'); background-size: cover; background-position: center; background-repeat: no-repeat; height: 700px;">
+                    <div class="carousel-item {{ $index == 0 ? 'active' : '' }} slide{{ $index + 1 }}">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-4 offset-md-2">
@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="slider_img-box">
-                                        <img src="{{ asset('images/' . $juego->imagen) }}" alt="{{ $juego->titulo }}"style=" background-size: cover; background-position: center; background-repeat: no-repeat; height: 700px;">
+                                        <img src="{{ asset('images/' . $juego->imagen) }}" alt="{{ $juego->titulo }}">
                                     </div>
                                 </div>
                             </div>
@@ -50,12 +50,6 @@
             </div>
         </div>
     </section>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
     <br>
     <br>
     <br>
