@@ -7,13 +7,12 @@
     <!--barra lateral-->
     <div class="sidebar">
         <ul>
-            <li><a href="{{ url('admin/dashboard') }}">Inicio</a></li>
             <li><a href="{{ url('admin/juegos') }}">juegos</a></li>
             <li><a href="{{ url('admin/users') }}">usuarios</a></li>
             <li><a href="{{ url('categorias') }}">categorias</a></li>
             <li><a href="{{ url('admin/intercambios') }}">intercambios</a></li>
             <li><a href="{{ url('admin/ventas') }}">ventas</a></li>
-            <li><a href=""></a></li>
+            
         </ul>
     </div>
 
