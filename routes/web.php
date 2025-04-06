@@ -34,7 +34,6 @@ Route::get('/contacto', function () {
 
 
 Route::post('/contactanos', [ContactController::class, 'enviarMensaje'])->name('enviar.mensaje');
-
 Route::get('/juegosDisp', [JuegoController::class, 'index'])->name('juegosDisp');
 Route::get('/juegosDisp/{juego}', [JuegoController::class, 'show'])->name('tienda.show');
 Route::get('/juegos-gratis', [JuegoController::class, 'juegosGratis'])->name('tienda.juegos-gratis');

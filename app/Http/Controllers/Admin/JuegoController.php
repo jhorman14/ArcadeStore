@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Juego;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use App\Http\Requests\JuegoRequest; // Si tienes un Request específico para Juego
+use App\Http\Requests\JuegoRequest;
 use App\Models\Categoria;
 use App\Models\Inventario;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class JuegoController extends Controller
 {
@@ -20,7 +21,7 @@ class JuegoController extends Controller
      */
     public function index(): View
     {
-        $juegos = Juego::with('categoria', 'inventario')->paginate(10); // Carga también el inventario
+        $juegos = Juego::with('categoria', 'inventario')->paginate(10);
         return view('admin.juego.index', compact('juegos'));
     }
 
@@ -47,7 +48,6 @@ class JuegoController extends Controller
             'id_categoria' => 'required|exists:categorias,id',
             'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'stock' => 'required|integer|min:0',
-            // 'destacado' => 'nullable|boolean', // Ya no es necesario aquí si solo se destaca después
         ]);
 
         $imagen = $request->file('imagen');
@@ -66,7 +66,7 @@ class JuegoController extends Controller
             'requisitos_recomendados' => $request->requisitos_recomendados,
             'id_categoria' => $request->id_categoria,
             'imagen' => $nombreImagen,
-            'destacado' => false, // Se crea por defecto como no destacado
+            'destacado' => false,
         ]);
 
         Inventario::create([
@@ -100,7 +100,6 @@ class JuegoController extends Controller
             'id_categoria' => 'required|exists:categorias,id',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'stock' => 'required|integer|min:0',
-            // 'destacado' => 'nullable|boolean', // Ya no es necesario aquí si solo se destaca con el botón
         ]);
 
         $dataToUpdate = $request->except(['_token', '_method', 'imagen']);
@@ -119,7 +118,6 @@ class JuegoController extends Controller
 
         $juego->update($dataToUpdate);
 
-        // Actualizar el inventario
         if ($juego->inventario) {
             $juego->inventario->update(['stock' => $request->stock]);
         } else {
@@ -134,17 +132,39 @@ class JuegoController extends Controller
 
     public function destroy($id): RedirectResponse
     {
-        $juego = Juego::find($id);
-
-        if ($juego) {
-            $juego->activo = !$juego->activo;
-            $juego->save();
-
-            return Redirect::route('admin.juegos.index')
-                ->with('success', 'Juego ' . ($juego->activo ? 'activado' : 'desactivado') . ' exitosamente.');
-        } else {
-            return Redirect::route('admin.juegos.index')
-                ->with('error', 'Juego no encontrado.');
+        DB::beginTransaction();
+        
+        try {
+            $juego = Juego::findOrFail($id);
+            $categoria = Categoria::findOrFail($juego->id_categoria);
+            
+            $nuevoEstado = !$juego->activo;
+            
+            if ($nuevoEstado) {
+                $juego->activo = true;
+                $juego->save();
+                
+                if (!$categoria->activo) {
+                    $categoria->activo = true;
+                    $categoria->save();
+                    
+                    DB::commit();
+                    return redirect()->back()->with('success', 'Se ha activado el juego "' . $juego->titulo . '" y su categoría "' . $categoria->nombre_categoria . '".');
+                }
+                
+                DB::commit();
+                return redirect()->back()->with('success', 'Se ha activado el juego "' . $juego->titulo . '". La categoría "' . $categoria->nombre_categoria . '" ya estaba activa.');
+            } else {
+                $juego->activo = false;
+                $juego->save();
+                
+                DB::commit();
+                return redirect()->back()->with('success', 'Se ha desactivado el juego "' . $juego->titulo . '".');
+            }
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error al actualizar el estado del juego: ' . $e->getMessage());
         }
     }
 
