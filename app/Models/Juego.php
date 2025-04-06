@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Categoria $categoria
  * @property Convenio[] $convenios
  * @property Intercambio[] $intercambios_ofrecidos
+ * @property Intercambio[] $intercambios_solicitados
  * @property Inventario $inventario
  * @property Pedido[] $pedidos
  * @property Venta[] $ventas
@@ -30,7 +31,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Juego extends Model
 {
-
     protected $perPage = 20;
 
     /**
@@ -48,7 +48,6 @@ class Juego extends Model
         'imagen',
         'activo'
     ];
-    
 
     /**
      * @return BelongsTo
@@ -72,6 +71,14 @@ class Juego extends Model
     public function intercambios_ofrecidos()
     {
         return $this->hasMany(Intercambio::class, 'id_producto_ofrecido', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function intercambios_solicitados()
+    {
+        return $this->hasMany(Intercambio::class, 'id_producto_solicitado', 'id');
     }
 
     /**
