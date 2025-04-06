@@ -23,20 +23,22 @@
         @csrf
 
         <div class="form-group">
-            <label for="id_juego">Selecciona el Juego:</label>
-            <select class="form-control @error('id_juego') is-invalid @enderror" id="id_juego" name="id_juego" required onchange="actualizarTotal()">
-                <option value="">Selecciona un juego</option>
-                @foreach ($juegos as $juego)
-                <option value="{{ $juego->id }}" data-precio="{{ $juego->precio }}" {{ old('id_juego') == $juego->id ? 'selected' : '' }}>
-                    {{ $juego->titulo }} - ${{ number_format($juego->precio, 2) }}
-                </option>
-                @endforeach
-            </select>
-            @error('id_juego')
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $message }}</strong>
-            </span>
-            @enderror
+            <label for="id_juego">Juego Seleccionado:</label>
+            @if ($juego_id)
+                @php
+                    $juegoSeleccionado = \App\Models\Juego::find($juego_id);
+                @endphp
+                @if ($juegoSeleccionado)
+                    <input type="text" class="form-control" value="{{ $juegoSeleccionado->titulo }}" readonly>
+                    <input type="hidden" name="id_juego" id="id_juego" value="{{ $juegoSeleccionado->id }}">
+                @else
+                    <p class="text-danger">Juego no encontrado.</p>
+                    <input type="hidden" name="id_juego" id="id_juego" value="">
+                @endif
+            @else
+                <p class="text-danger">Ningún juego seleccionado.</p>
+                <input type="hidden" name="id_juego" id="id_juego" value="">
+            @endif
         </div>
 
         <div class="form-group">
@@ -56,9 +58,8 @@
 
         <div class="form-group">
             <label for="total">Total del Pedido:</label>
-            <input type="text" class="form-control" id="total" name="total" value="{{ old('total', '0.00') }}" readonly>
+            <input type="text" class="form-control" id="total" name="total" value="{{ old('total', ($juegoSeleccionado->precio ?? '0.00')) }}" readonly>
         </div>
-
         <button type="submit" class="btn btn-primary">Realizar Pedido</button>
     </form>
 </div>
