@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\VentaRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Carbon\Carbon;
 
 class VentaController extends Controller
 {
@@ -16,13 +17,30 @@ class VentaController extends Controller
      */
     public function index(Request $request): View
     {
-        $ventas = Venta::with(['juego', 'user', 'pedido']) // Load relationships
-            ->orderBy('fecha_venta', 'desc')
-            ->paginate(15);
+        $search = $request->input('search');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        return view('venta.index', compact('ventas'))
-            ->with('i', ($request->input('page', 1) - 1) * $ventas->perPage());
+        $ventas = Venta::with(['user', 'juego', 'pedido'])
+            ->when($search, function ($query, $search) {
+                return $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                })->orWhereHas('juego', function ($q) use ($search) {
+                    $q->where('titulo', 'like', '%' . $search . '%');
+                });
+            })
+            ->when($startDate, function ($query, $startDate) {
+                $query->where('fecha_venta', '>=', Carbon::parse($startDate)->startOfDay());
+            })
+            ->when($endDate, function ($query, $endDate) {
+                $query->where('fecha_venta', '<=', Carbon::parse($endDate)->endOfDay());
+            })
+            ->paginate(10)
+            ->appends($request->query()); // Mantener los filtros en la paginación
+
+        return view('venta.index', compact('ventas'));
     }
+
 
     /**
      * Show the form for creating a new resource.

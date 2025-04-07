@@ -7,11 +7,24 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
-    {
-        $users = User::paginate(10);
-        return view('admin.users.index', compact('users'));
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+    $query = User::query(); // Start with a base query
+
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('role', 'like', '%' . $search . '%')
+                ->orWhere('is_active', 'like', '%' . $search . '%');
+        });
     }
+
+    $users = $query->paginate(10);
+    return view('admin.users.index', compact('users'));
+}
+
 
     public function changeRole(Request $request, User $user)
     {

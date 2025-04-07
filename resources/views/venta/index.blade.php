@@ -15,7 +15,7 @@
                                 {{ __('Ventas') }}
                             </span>
                             <div class="float-right">
-                                <a class="btn btn-primary btn-sm" href="dashboard"> {{ __('Back') }}</a>
+                                <a class="btn btn-primary btn-sm" href="{{ route('admin.dashboard') }}"> {{ __('Back') }}</a>
                             </div>
                         </div>
                     </div>
@@ -26,37 +26,57 @@
                     @endif
 
                     <div class="card-body bg-white">
+                        {{-- Search and Filter Bar --}}
+                        <div class="mb-3">
+                        <form action="{{ route('ventas.index') }}" method="GET">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" name="search" placeholder="Buscar por usuario o juego..." value="{{ request('search') }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="date" class="form-control" name="start_date" value="{{ request('start_date') }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="date" class="form-control" name="end_date" value="{{ request('end_date') }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-										<th>Fecha Venta</th>
-										<th>Usuario</th>
-										<th>Juego</th>
+                                        <th>Fecha Venta</th>
+                                        <th>Usuario</th>
+                                        <th>Juego</th>
                                         <th>Pedido</th>
-
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($ventas as $venta)
+                                    @forelse ($ventas as $venta)
                                         <tr>
-                                            <td>{{ ++$i }}</td>
-                                            
-											<td>{{ $venta->fecha_venta }}</td>
-											<td>{{ $venta->user->name }}</td>
-											<td>{{ $venta->juego->titulo }}</td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $venta->fecha_venta }}</td>
+                                            <td>{{ $venta->user->name }}</td>
+                                            <td>{{ $venta->juego->titulo }}</td>
                                             <td>{{ $venta->pedido ? $venta->pedido->id : 'N/A' }}</td>
-
                                             <td>
                                                 <form action="{{ route('ventas.destroy',$venta->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-primary " href="{{ route('ventas.show',$venta->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
                                                 </form>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="6">No hay ventas registradas.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>

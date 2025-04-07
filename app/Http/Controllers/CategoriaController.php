@@ -12,13 +12,18 @@ use Illuminate\View\View;
 
 class CategoriaController extends Controller
 {
-    public function index(Request $request): View
-    {
-        $categorias = Categoria::paginate(10);
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+    $categorias = Categoria::when($search, function ($query, $search) {
+        return $query->where('nombre_categoria', 'like', '%' . $search . '%')
+        ->orWhere('activo', 'like', '%' . $search . '%')
+        ->orWhere('descripcion', 'like', '%' . $search . '%');
+    })
+    ->paginate(10);
+    return view('categoria.index', compact('categorias'));
+}
 
-        return view('categoria.index', compact('categorias'))
-            ->with('i', ($request->input('page', 1) - 1) * $categorias->perPage());
-    }
 
     public function create(): View
     {

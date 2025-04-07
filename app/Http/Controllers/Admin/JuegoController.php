@@ -19,9 +19,29 @@ class JuegoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $juegos = Juego::with('categoria', 'inventario')->paginate(10);
+        $search = $request->input('search');
+        $destacado = $request->input('destacado');
+        $activo = $request->input('activo');
+
+        $juegos = Juego::with('categoria', 'inventario')
+            ->when($search, function ($query, $search) {
+                return $query->where('titulo', 'like', '%' . $search . '%')
+                             ->orWhere('descripcion', 'like', '%' . $search . '%')
+                             ->orWhereHas('categoria', function ($categoriaQuery) use ($search) {
+                                 $categoriaQuery->where('nombre_categoria', 'like', '%' . $search . '%');
+                             });
+            })
+            ->when($destacado, function ($query) {
+                return $query->where('destacado', true);
+            })
+            ->when($activo, function ($query) {
+                return $query->where('activo', true);
+            })
+            ->paginate(10)
+            ->appends($request->query()); // Keep other query parameters for pagination
+
         return view('admin.juego.index', compact('juegos'));
     }
 

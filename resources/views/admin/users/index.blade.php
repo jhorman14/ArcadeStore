@@ -26,6 +26,19 @@
                 </div>
                 @endif
 
+                <div class="mb-3">
+                        <form action="{{ route('admin.users.index') }}" method="GET">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="search" placeholder="Buscar" value="{{ request('search') }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary">Buscar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
                 <div class="card-body bg-white">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">

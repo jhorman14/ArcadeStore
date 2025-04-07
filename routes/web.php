@@ -97,7 +97,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('convenios', ConvenioController::class);
     Route::resource('users', AdminUserController::class); // Agrega las rutas para el controlador de usuarios de admin
     Route::resource('ventas', VentaController::class);
-    Route::resource('intercambios', IntercambioController::class);
+    Route::get('intercambios', [DashboardController::class, 'IntercambiosDashboard'])->name('intercambios');
     
 });
 

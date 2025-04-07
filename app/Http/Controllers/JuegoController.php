@@ -19,6 +19,8 @@ class JuegoController extends Controller
         $adquiridosQuery = null;
         $juegosAdquiridosIds = [];
         $juegosAdquiridos = collect(); // Initialize as an empty Collection
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
 
         if (auth()->check()) {
             $juegosAdquiridos = auth()->user()->juegosComprados;
@@ -55,6 +57,16 @@ class JuegoController extends Controller
                     ->orWhere('descripcion', 'like', '%' . $searchTerm . '%');
             });
         }
+
+        // Filtrado por rango de precio para Juegos Disponibles
+        if ($minPrice !== null) {
+            $query->where('precio', '>=', $minPrice);
+        }
+
+        if ($maxPrice !== null) {
+            $query->where('precio', '<=', $maxPrice);
+        }
+
 
         // Excluir juegos adquiridos de la lista de Juegos Disponibles
         if (!empty($juegosAdquiridosIds)) {
