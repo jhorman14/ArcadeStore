@@ -17,30 +17,36 @@
                     </div>
 
                     <div class="card-body bg-white py-4">
+
+                        <div class="mb-3">
+                            <label for="nick" class="form-label fw-bold" style="font-size: 22px">{{ __('Nick') }}:</label>
+                            <p>{{ $user->nick }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-bold" style="font-size: 22px">{{ __('Correo Electrónico') }}:</label>
+                            <p>{{ $user->email }}</p>
+                        </div>
+                        
                         <div class="mb-3">
                             <label for="name" class="form-label fw-bold" style="font-size: 22px">{{ __('Nombre') }}:</label>
                             <p>{{ $user->name }}</p>
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label fw-bold" style="font-size: 22px">{{ __('Correo Electrónico') }}:</label>
-                            <p>{{ $user->email }}</p>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="nick" class="form-label fw-bold" style="font-size: 22px">{{ __('Nick') }}:</label>
-                            <p>{{ $user->nick }}</p>
-                        </div>
-
-                        <div class="mb-3">
                             <label for="telefono" class="form-label fw-bold" style="font-size: 22px">{{ __('Teléfono') }}:</label>
-                            <p>{{ $user->telefono }}</p>
+                            <p>+57 {{ $user->telefono }}</p>
                         </div>
 
                         <div class="mt-4 d-grid gap-2">
                             <div class="d-flex justify-content-between align-items-center">
                                 <a href="{{ route('pedidos.index') }}" class="btn btn-info">{{ __('Ver Historial de Pedidos') }}</a>    
                                 <a href="{{ route('profile.edit', $user->id) }}" class="btn btn-secondary">{{ __('Editar Perfil') }}</a>
+                                <a class="btn btn-info" href="{{ route('logout') }}"
+                                onclick="event.preventDefault();
+                                                               document.getElementById('logout-form').submit();">
+                                {{ __('Cerrar sesion') }}
+                                 </a>
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeactivate">
                                     {{ __('Eliminar Cuenta') }}
                                 </button>
