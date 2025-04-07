@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Mail;
-
+use App\Http\Controllers\Admin\DashboardController; // Agrega esta linea
 use App\Http\Controllers\InicioController; // Asegúrate de importar tu controlador
 
 Route::get('/', [InicioController::class, 'index'])->name('inicio');
@@ -88,8 +88,7 @@ Route::prefix('categorias')->name('categorias.')->middleware(['auth', 'admin'])-
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('juegos', AdminJuegoController::class);
-    Route::get('/dashboard', function () {
-        return view('tienda.dashboard');})->name('admin.dashboard'); // Asigna un nombre a la ruta del dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard'); // Asigna un nombre a la ruta del dashboard
     Route::resource('convenios', ConvenioController::class);
     Route::resource('users', AdminUserController::class); // Agrega las rutas para el controlador de usuarios de admin
     Route::resource('ventas', VentaController::class);
@@ -119,5 +118,3 @@ Route::prefix('admin/users')->name('admin.users.')->middleware(['auth', 'admin']
     Route::put('/{user}/change-role', [AdminUserController::class, 'changeRole'])->name('change-role');
     Route::put('/{user}/activate', [AdminUserController::class, 'activate'])->name('activate');
 });
-
-

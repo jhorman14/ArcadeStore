@@ -20,34 +20,26 @@
     <div class="main-content">
         <div class="card">
             <h3>Usuarios</h3>
-            <p> 50 nuevos usuarios registrados hoy.</p>
+            <p id="total-users">
+                Total de Usuarios Registrados: {{ isset($stats['total_users']) ? $stats['total_users'] : '0' }}
+            </p>
             <div class="progress-bar">
-            <div class="progress" style="width: 75%;"></div>
+                <div class="progress" style="width: {{ isset($stats['total_users']) ? $stats['total_users'] : '0' }}%;"></div>
             </div>
         </div>
 
-                <div class="card">
-                    <h3>Ventas</h3>
-                    <p> 120 ventas realizados hoy.</p>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 50%;"></div>
-                    </div>
-                </div>
-                        <div class="card">
-                            <h3>Ventas con descuentos</h3>
-                            <p> 50% hoy.</p>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: 50%;"></div>
-                                </div>
-                            </div>
-            <!-- grafico circular-->
-            <div class="circle-chart">
-                <h3>Progreso Total</h3>
-                <div class="circle" style="background: conic-gradient(#4CAF50 90%, #f2f2f2 0 100%);"></div>
-                <P class="circle-text">90%</P>
+        <div class="card">
+            <h3>Ventas</h3>
+            <p id="total-games-sold">
+                Total de Juegos Vendidos: {{ isset($stats['total_games_sold']) ? $stats['total_games_sold'] : '0' }}
+            </p>
+            <div class="progress-bar">
+                <div class="progress" style="width: {{ isset($stats['total_games_sold']) ? $stats['total_games_sold'] : '0' }}%;"></div>
             </div>
+        </div>
     </div>
-    </div>
+</div>
+<script src="{{ asset('js/admin-dashboard.js') }}"></script>
 </body>
 
 
