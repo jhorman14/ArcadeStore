@@ -22,4 +22,16 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    # Error Pages
+    ErrorDocument 401 /errors/401.blade.php
+    ErrorDocument 402 /errors/402.blade.php
+    ErrorDocument 403 /errors/403.blade.php
+    ErrorDocument 404 /errors/404.blade.php
+    ErrorDocument 419 /errors/419.blade.php
+    ErrorDocument 429 /errors/429.blade.php
+    ErrorDocument 500 /errors/500.blade.php
+    ErrorDocument 503 /errors/503.blade.php
+
+
 </IfModule>
