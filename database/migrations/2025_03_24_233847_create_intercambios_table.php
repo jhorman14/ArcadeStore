@@ -17,10 +17,13 @@ return new class extends Migration
             $table->date('fecha_intercambio');
             $table->unsignedBigInteger('id_producto_solicitado');
             $table->unsignedBigInteger('id_producto_ofrecido');
+            $table->unsignedBigInteger('id_usuario');
+            $table->decimal('costo_adicional', 10, 2)->nullable();
             $table->timestamps();
 
             $table->foreign('id_producto_solicitado')->references('id')->on('juegos');
             $table->foreign('id_producto_ofrecido')->references('id')->on('juegos');
+            $table->foreign('id_usuario')->references('id')->on('users');
         });
     }
 

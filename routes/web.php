@@ -54,10 +54,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
     // Intercambios
     Route::get('/intercambio/{juego}/formulario', [IntercambioController::class, 'mostrarFormularioIntercambio'])->name('intercambio.formulario');
-    Route::post('/intercambio/{juego}/solicitar', [IntercambioController::class, 'solicitarIntercambio'])->name('intercambio.solicitar');
+    Route::post('/intercambio/{juego_id}/solicitar', [IntercambioController::class, 'solicitarIntercambio'])->name('intercambio.solicitar');
     Route::get('/intercambio/pendiente-pago/{intercambio}', [IntercambioController::class, 'pendientePago'])->name('intercambio.pendiente-pago');
-    Route::post('/intercambio/procesar-pago/{intercambio}', [IntercambioController::class, 'procesarPagoIntercambio'])->name('intercambio.procesar-pago');
     Route::get('/usuario/intercambios', [IntercambioController::class, 'listarIntercambios'])->name('usuario.intercambios');
+    Route::post('/intercambio/{intercambio}/procesar-pago', [IntercambioController::class, 'procesarPagoIntercambio'])->name('intercambio.procesar-pago');
 });
 
 

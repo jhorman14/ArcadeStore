@@ -20,7 +20,7 @@
                     @endif
                     @auth
                     <h3>Intercambiar por este juego</h3>
-                    <form action="{{ route('intercambio.solicitar', $juego) }}" method="POST">
+                    <form action="{{ route('intercambio.solicitar', ['juego_id' => $juego->id]) }}" method="POST">
                         @csrf
                         <div>
                             <label for="juego_ofrecido_id">Selecciona un juego de tu biblioteca para ofrecer:</label>
