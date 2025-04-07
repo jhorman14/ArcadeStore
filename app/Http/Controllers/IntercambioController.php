@@ -131,43 +131,59 @@ class IntercambioController extends Controller
         $usuario = Auth::user();
         Log::info('Usuario autenticado: ' . $usuario->id);
 
-        // Crear el pedido
-        $pedido = new Pedido();
-        $pedido->fecha_pedido = now();
-        $pedido->estado_pedido = 'Completado';
-        $pedido->id_usuario = $usuario->id;
-        $pedido->id_juego = $intercambio->id_producto_solicitado;
-        $pedido->id_intercambio = $intercambio->id;
-        $pedido->save();
-        Log::info('Pedido creado con ID: ' . $pedido->id);
+        // Verificar si ya existe un pedido para este intercambio
+        $pedido = Pedido::where('id_intercambio', $intercambio->id)->first();
+        
+        if (!$pedido) {
+            // Crear el pedido solo si no existe
+            $pedido = new Pedido();
+            $pedido->fecha_pedido = now();
+            $pedido->estado_pedido = 'Completado';
+            $pedido->id_usuario = $usuario->id;
+            $pedido->id_juego = $intercambio->id_producto_solicitado;
+            $pedido->id_intercambio = $intercambio->id;
+            $pedido->save();
+            Log::info('Pedido creado con ID: ' . $pedido->id);
+        }
 
-        // Crear el pago
-        $pago = new Pago();
-        $pago->metodo_de_pago = $request->metodo_de_pago;
-        $pago->total = $intercambio->costo_adicional;
-        $pago->id_pedido = $pedido->id;
-        $pago->id_intercambio = $intercambio->id;
-        $pago->save();
-        Log::info('Pago creado con ID: ' . $pago->id);
+        // Verificar si ya existe un pago para este pedido
+        $pago = Pago::where('id_pedido', $pedido->id)->first();
+        
+        if (!$pago) {
+            // Crear el pago solo si no existe
+            $pago = new Pago();
+            $pago->metodo_de_pago = $request->metodo_de_pago;
+            $pago->total = $intercambio->costo_adicional;
+            $pago->id_pedido = $pedido->id;
+            $pago->save();
+            Log::info('Pago creado con ID: ' . $pago->id);
+        }
 
-        // Actualizar el estado del intercambio
-        $intercambio->estado_intercambio = 'Completado';
-        $intercambio->save();
-        Log::info('Estado del intercambio actualizado a Completado');
+        // Actualizar el estado del intercambio si aún no está completado
+        if ($intercambio->estado_intercambio !== 'Completado') {
+            $intercambio->estado_intercambio = 'Completado';
+            $intercambio->save();
+            Log::info('Estado del intercambio actualizado a Completado');
 
-        // Realizar el intercambio de juegos
-        $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
-        $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado);
-        Log::info('Juegos intercambiados correctamente');
+            // Realizar el intercambio de juegos solo si no se ha hecho antes
+            $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
+            $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado);
+            Log::info('Juegos intercambiados correctamente');
+        }
 
-        // Crear la venta
-        $venta = Venta::create([
-            'fecha_venta' => now(),
-            'id_usuario' => $usuario->id,
-            'id_juego' => $intercambio->id_producto_solicitado,
-            'id_pedido' => $pedido->id
-        ]);
-        Log::info('Venta creada con ID: ' . $venta->id);
+        // Verificar si ya existe una venta para este pedido
+        $venta = Venta::where('id_pedido', $pedido->id)->first();
+        
+        if (!$venta) {
+            // Crear la venta solo si no existe
+            $venta = Venta::create([
+                'fecha_venta' => now(),
+                'id_usuario' => $usuario->id,
+                'id_juego' => $intercambio->id_producto_solicitado,
+                'id_pedido' => $pedido->id
+            ]);
+            Log::info('Venta creada con ID: ' . $venta->id);
+        }
 
         DB::commit();
         Log::info('Transacción completada exitosamente');
@@ -179,14 +195,14 @@ class IntercambioController extends Controller
         DB::rollBack();
         Log::error('Error al procesar pago: ' . $e->getMessage());
         Log::error('Stack trace: ' . $e->getTraceAsString());
-        Log::error('Datos del intercambio: ' . json_encode($intercambio->toArray()));
-        Log::error('Datos del request: ' . json_encode($request->all()));
         
         return redirect()->back()
             ->with('error', 'Error al procesar el pago: ' . $e->getMessage())
             ->withInput();
     }
 }
+
+
 
 
     public function mostrarFormularioIntercambio(Juego $juego)

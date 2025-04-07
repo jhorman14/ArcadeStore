@@ -34,12 +34,18 @@
                 @foreach ($intercambios as $intercambio)
                     <tr>
                         <td>{{ $intercambio->id }}</td>
-                        <td>{{ $intercambio->productoSolicitado->titulo ?? 'N/A' }}</td>
-                        <td>{{ $intercambio->productoOfrecido->titulo ?? 'N/A' }}</td>
+                        <td>{{ $intercambio->juegoSolicitado->titulo ?? 'N/A' }}</td>
+                        <td>{{ $intercambio->juegoOfrecido->titulo ?? 'N/A' }}</td>
                         <td>{{ $intercambio->fecha_intercambio }}</td>
                         <td>{{ $intercambio->estado_intercambio }}</td>
                         <td>
-                            {{-- Aquí podrías agregar botones para ver detalles, pagar, etc. --}}
+                            @if($intercambio->estado_intercambio === 'Pendiente_Pago')
+                                <a href="{{ route('intercambio.pendiente-pago', $intercambio->id) }}" 
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fas fa-money-bill me-1"></i>
+                                    {{ __('Realizar Pago') }}
+                                </a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

@@ -26,12 +26,14 @@ class Pedido extends Model
 
     protected $perPage = 20;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['fecha_pedido', 'estado_pedido', 'id_usuario', 'id_juego'];
+    protected $fillable = [
+        'fecha_pedido',
+        'estado_pedido',
+        'id_usuario',
+        'id_juego',
+        'cantidad',
+        'id_intercambio'
+    ];
 
 
     /**

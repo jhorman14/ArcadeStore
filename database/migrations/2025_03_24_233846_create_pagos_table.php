@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
             $table->string('metodo_de_pago', 50);
-            $table->integer('total');
+            $table->decimal('total', 10, 2);  // Changed to decimal for better precision
             $table->unsignedBigInteger('id_pedido');
+            $table->unsignedBigInteger('id_intercambio')->nullable();  // Added this line
             $table->timestamps();
 
-            $table->foreign('id_pedido')->references('id')->on('pedidos')->onDelete('cascade'); // Agregamos onDelete cascade
+            $table->foreign('id_pedido')->references('id')->on('pedidos')->onDelete('cascade');
+            $table->foreign('id_intercambio')->references('id')->on('intercambios')->onDelete('set null');  // Added this line
         });
     }
 

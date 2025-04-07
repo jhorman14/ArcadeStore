@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -13,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
-            $table->date('fecha_pedido');
-            $table->string('estado_pedido', 50);
+            $table->date('fecha_pedido')->default(DB::raw('CURRENT_DATE'));
+            $table->string('estado_pedido', 50)->default('Pendiente'); // Agregado valor por defecto
             $table->unsignedBigInteger('id_usuario');
             $table->unsignedBigInteger('id_juego');
             $table->integer('cantidad')->default(1);
