@@ -3,27 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log; // Add this line
 
-/**
- * Class Venta
- *
- * @property $id
- * @property $fecha_venta
- * @property $id_usuario
- * @property $id_juego
- * @property $created_at
- * @property $updated_at
- *
- * @property Juego $juego
- * @property User $user
- * @package App
- * @mixin \Illuminate\Database\Eloquent\Builder
- */
 class Venta extends Model
 {
     protected $perPage = 20;
 
-    protected $fillable = ['fecha_venta', 'id_usuario', 'id_juego', 'id_pedido']; // Add id_pedido
+    protected $fillable = ['fecha_venta', 'id_usuario', 'id_juego', 'id_pedido'];
 
     public function juego()
     {
@@ -42,11 +28,19 @@ class Venta extends Model
 
     public static function createFromPedido(Pedido $pedido)
     {
-        return self::create([
-            'fecha_venta' => now(),
-            'id_usuario' => $pedido->id_usuario,
-            'id_juego' => $pedido->id_juego,
-            'id_pedido' => $pedido->id,
-        ]);
+        Log::info('Iniciando Venta::createFromPedido para pedido ID: ' . $pedido->id); // Add this line
+        try {
+            $venta = self::create([
+                'fecha_venta' => now(),
+                'id_usuario' => $pedido->id_usuario,
+                'id_juego' => $pedido->id_juego,
+                'id_pedido' => $pedido->id,
+            ]);
+            Log::info('Venta creada exitosamente con ID: ' . $venta->id); // Add this line
+            return $venta;
+        } catch (\Exception $e) {
+            Log::error('Error en Venta::createFromPedido: ' . $e->getMessage()); // Add this line
+            throw $e; // Re-throw the exception to be caught in the controller
+        }
     }
 }

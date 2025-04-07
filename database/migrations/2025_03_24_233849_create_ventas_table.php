@@ -13,12 +13,14 @@ return new class extends Migration
             $table->date('fecha_venta');
             $table->unsignedBigInteger('id_usuario');
             $table->unsignedBigInteger('id_juego');
-            $table->unsignedBigInteger('id_pedido')->nullable(); // Add id_pedido
+            $table->unsignedBigInteger('id_pedido')->nullable();
             $table->timestamps();
 
-            $table->foreign('id_usuario')->references('id')->on('users');
-            $table->foreign('id_juego')->references('id')->on('juegos');
-            $table->foreign('id_pedido')->references('id')->on('pedidos')->onDelete('set null'); // Add foreign key for id_pedido
+            $table->foreign('id_usuario')->references('id')->on('users')->onDelete('cascade');
+            
+            $table->foreign('id_juego')->references('id')->on('juegos')->onDelete('cascade');
+            
+            $table->foreign('id_pedido')->references('id')->on('pedidos')->onDelete('cascade'); // Cambiamos de set null a cascade
         });
     }
 

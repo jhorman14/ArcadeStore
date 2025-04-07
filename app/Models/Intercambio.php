@@ -4,46 +4,44 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Class Intercambio
- *
- * @property $id
- * @property $estado_intercambio
- * @property $fecha_intercambio
- * @property $id_producto_solicitado
- * @property $id_producto_ofrecido
- * @property $created_at
- * @property $updated_at
- *
- * @property Juego $productoSolicitado
- * @property Juego $productoOfrecido
- * @package App
- * @mixin \Illuminate\Database\Eloquent\Builder
- */
 class Intercambio extends Model
 {
-    protected $perPage = 20;
+    protected $fillable = [
+        'estado_intercambio',
+        'fecha_intercambio',
+        'id_usuario',
+        'id_producto_solicitado',
+        'id_producto_ofrecido',
+        'costo_adicional'
+    ];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['estado_intercambio', 'fecha_intercambio', 'id_producto_solicitado', 'id_producto_ofrecido'];
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function productoSolicitado()
+    // Relación con el usuario
+    public function usuario()
     {
-        return $this->belongsTo(Juego::class, 'id_producto_solicitado', 'id');
+        return $this->belongsTo(User::class, 'id_usuario');
     }
-    
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function productoOfrecido()
+
+    // Relación con el juego solicitado
+    public function juegoSolicitado()
     {
-        return $this->belongsTo(Juego::class, 'id_producto_ofrecido', 'id');
+        return $this->belongsTo(Juego::class, 'id_producto_solicitado');
+    }
+
+    // Relación con el juego ofrecido
+    public function juegoOfrecido()
+    {
+        return $this->belongsTo(Juego::class, 'id_producto_ofrecido');
+    }
+
+    // Relación con el pedido
+    public function pedido()
+    {
+        return $this->hasOne(Pedido::class, 'id_intercambio');
+    }
+
+    // Relación con el pago
+    public function pago()
+    {
+        return $this->hasOne(Pago::class, 'id_intercambio');
     }
 }

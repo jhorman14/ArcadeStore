@@ -28,9 +28,14 @@ class IntercambioController extends Controller
         $usuario = Auth::user();
         $juegoOfrecidoId = $request->input('juego_ofrecido_id');
         $juegoOfrecido = Juego::findOrFail($juegoOfrecidoId);
+        $juegoSolicitado = Juego::findOrFail($juego_id->id);
 
         if (!$usuario->juegosComprados()->where('juegos.id', $juegoOfrecidoId)->exists()) {
             return Redirect::back()->with('error', 'El juego ofrecido no pertenece a tu biblioteca.');
+        }
+
+        if (!$juegoSolicitado) {
+            return Redirect::back()->with('error', 'El juego solicitado no existe.');
         }
 
         if ($juego_id->id === $juegoOfrecido->id) {
@@ -41,39 +46,35 @@ class IntercambioController extends Controller
         $precioOfrecido = $juegoOfrecido->precio;
         $costoAdicional = 0;
 
+        if ($precioSolicitado > $precioOfrecido) {
+            $costoAdicional = ($precioSolicitado - $precioOfrecido) * 1.20;
+        } elseif ($precioSolicitado == $precioOfrecido) {
+            $costoAdicional = $precioSolicitado * 0.20;
+        }
+
         DB::beginTransaction();
 
         try {
-            $intercambio = new Intercambio();
-            $intercambio->estado_intercambio = 'Pendiente';
-            $intercambio->fecha_intercambio = now()->toDateString();
-            $intercambio->id_usuario = $usuario->id;
-            $intercambio->id_producto_solicitado = $juego_id->id;
-            $intercambio->id_producto_ofrecido = $juegoOfrecido->id;
+            // Crear el intercambio con estado inicial
+            $intercambio = Intercambio::create([
+                'estado_intercambio' => $costoAdicional > 0 ? 'Pendiente_Pago' : 'Pendiente',
+                'fecha_intercambio' => now()->toDateString(),
+                'id_usuario' => $usuario->id,
+                'id_producto_solicitado' => $juego_id->id,
+                'id_producto_ofrecido' => $juegoOfrecido->id,
+                'costo_adicional' => $costoAdicional
+            ]);
 
-            if ($precioSolicitado > $precioOfrecido) {
-                $diferencia = $precioSolicitado - $precioOfrecido;
-                $costoAdicional = $diferencia * 1.20;
-                $intercambio->costo_adicional = $costoAdicional;
-                $intercambio->save();
+            if ($costoAdicional > 0) {
                 DB::commit();
                 return Redirect::route('intercambio.pendiente-pago', $intercambio)
-                    ->with('costo_adicional', $costoAdicional);
-            } elseif ($precioSolicitado < $precioOfrecido) {
-                $intercambio->estado_intercambio = 'Aprobado';
-                $intercambio->save();
-                $usuario->juegosComprados()->detach($juegoOfrecido->id);
-                $usuario->juegosComprados()->attach($juego_id->id);
-                DB::commit();
-                return Redirect::route('pedido.intercambios')
-                    ->with('success', 'Intercambio completado exitosamente.');
+                    ->with('mensaje', 'Por favor, complete el pago adicional para finalizar el intercambio.');
             } else {
-                $costoAdicional = $precioSolicitado * 0.20;
-                $intercambio->costo_adicional = $costoAdicional;
-                $intercambio->save();
+                // Procesar intercambio directo sin pago
+                $this->completarIntercambio($intercambio);
                 DB::commit();
-                return Redirect::route('intercambio.pendiente-pago', $intercambio)
-                    ->with('costo_adicional', $costoAdicional);
+                return Redirect::route('usuario.intercambios')
+                    ->with('success', 'Intercambio completado exitosamente.');
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -82,49 +83,111 @@ class IntercambioController extends Controller
         }
     }
 
-    public function procesarPagoIntercambio(Request $request, Intercambio $intercambio)
+    protected function completarIntercambio(Intercambio $intercambio)
     {
-        DB::beginTransaction();
-        try {
-            $usuario = Auth::user();
-            
-            // Actualizar estado del intercambio
-            $intercambio->estado_intercambio = 'Completado';
-            $intercambio->save();
+        $usuario = Auth::user();
+        
+        // Actualizar estado
+        $intercambio->estado_intercambio = 'Completado';
+        $intercambio->save();
 
-            // Realizar el intercambio de juegos
-            $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
-            $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado);
+        // Realizar el intercambio de juegos
+        $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
+        $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado);
 
-            // Crear pedido
-            $pedido = new Pedido();
-            $pedido->id_usuario = $usuario->id;
-            $pedido->fecha_pedido = now();
-            $pedido->estado_pedido = 'Completado';
-            $pedido->id_juego = $intercambio->id_producto_solicitado;
-            $pedido->save();
-
-            // Registrar pago
-            $pago = new Pago();
-            $pago->total = $intercambio->costo_adicional ?? 0;
-            $pago->id_pedido = $pedido->id;
-            $pago->metodo_de_pago = $request->metodo_de_pago ?? 'Simulado';
-            $pago->save();
-
-            // Crear venta
-            Venta::createFromPedido($pedido);
-
-            DB::commit();
-            return redirect()->route('pedido.intercambios')
-                ->with('success', 'Intercambio completado exitosamente');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error al procesar pago: ' . $e->getMessage());
-            return redirect()->back()
-                ->with('error', 'Error al procesar el pago: ' . $e->getMessage());
-        }
+        return true;
     }
+
+    public function procesarPagoIntercambio(Request $request, Intercambio $intercambio)
+{
+    Log::info('Iniciando procesarPagoIntercambio para intercambio ID: ' . $intercambio->id);
+
+    // Verificar si el intercambio existe y pertenece al usuario actual
+    if (!$intercambio || $intercambio->id_usuario !== Auth::id()) {
+        Log::error('Intercambio no encontrado o no pertenece al usuario');
+        return redirect()->back()->with('error', 'Intercambio no válido.');
+    }
+
+    if ($intercambio->estado_intercambio === 'Completado') {
+        Log::info('Intercambio ya completado. Redirigiendo.');
+        return redirect()->route('usuario.intercambios')
+            ->with('info', 'Este intercambio ya ha sido completado.');
+    }
+
+    // Validar el método de pago
+    try {
+        $request->validate([
+            'metodo_de_pago' => 'required|string|in:tarjeta,paypal,transferencia'
+        ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        Log::error('Error de validación: ' . json_encode($e->errors()));
+        return redirect()->back()
+            ->withErrors($e->errors())
+            ->withInput();
+    }
+
+    DB::beginTransaction();
+    try {
+        $usuario = Auth::user();
+        Log::info('Usuario autenticado: ' . $usuario->id);
+
+        // Crear el pedido
+        $pedido = new Pedido();
+        $pedido->fecha_pedido = now();
+        $pedido->estado_pedido = 'Completado';
+        $pedido->id_usuario = $usuario->id;
+        $pedido->id_juego = $intercambio->id_producto_solicitado;
+        $pedido->id_intercambio = $intercambio->id;
+        $pedido->save();
+        Log::info('Pedido creado con ID: ' . $pedido->id);
+
+        // Crear el pago
+        $pago = new Pago();
+        $pago->metodo_de_pago = $request->metodo_de_pago;
+        $pago->total = $intercambio->costo_adicional;
+        $pago->id_pedido = $pedido->id;
+        $pago->id_intercambio = $intercambio->id;
+        $pago->save();
+        Log::info('Pago creado con ID: ' . $pago->id);
+
+        // Actualizar el estado del intercambio
+        $intercambio->estado_intercambio = 'Completado';
+        $intercambio->save();
+        Log::info('Estado del intercambio actualizado a Completado');
+
+        // Realizar el intercambio de juegos
+        $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
+        $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado);
+        Log::info('Juegos intercambiados correctamente');
+
+        // Crear la venta
+        $venta = Venta::create([
+            'fecha_venta' => now(),
+            'id_usuario' => $usuario->id,
+            'id_juego' => $intercambio->id_producto_solicitado,
+            'id_pedido' => $pedido->id
+        ]);
+        Log::info('Venta creada con ID: ' . $venta->id);
+
+        DB::commit();
+        Log::info('Transacción completada exitosamente');
+
+        return redirect()->route('usuario.intercambios')
+            ->with('success', 'Pago procesado y intercambio completado exitosamente.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error al procesar pago: ' . $e->getMessage());
+        Log::error('Stack trace: ' . $e->getTraceAsString());
+        Log::error('Datos del intercambio: ' . json_encode($intercambio->toArray()));
+        Log::error('Datos del request: ' . json_encode($request->all()));
+        
+        return redirect()->back()
+            ->with('error', 'Error al procesar el pago: ' . $e->getMessage())
+            ->withInput();
+    }
+}
+
 
     public function mostrarFormularioIntercambio(Juego $juego)
     {
@@ -143,18 +206,20 @@ class IntercambioController extends Controller
     public function pendientePago($id)
     {
         $intercambio = Intercambio::findOrFail($id);
-        
-        // Asegurarse de que el costo adicional esté disponible
-        $costoAdicional = $intercambio->costo_adicional ?? session('costo_adicional');
 
-        if (!$costoAdicional) {
+        if ($intercambio->estado_intercambio === 'Completado') {
             return redirect()->route('usuario.intercambios')
-                ->with('error', 'Información de pago adicional no encontrada.');
+                ->with('info', 'Este intercambio ya ha sido completado.');
+        }
+
+        if ($intercambio->estado_intercambio !== 'Pendiente_Pago') {
+            return redirect()->route('usuario.intercambios')
+                ->with('error', 'Este intercambio no está pendiente de pago.');
         }
 
         return view('pedido.intercambio-pago', [
             'intercambio' => $intercambio,
-            'costoAdicional' => $costoAdicional
+            'costoAdicional' => $intercambio->costo_adicional
         ]);
     }
 

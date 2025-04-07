@@ -18,10 +18,12 @@ return new class extends Migration
             $table->unsignedBigInteger('id_usuario');
             $table->unsignedBigInteger('id_juego');
             $table->integer('cantidad')->default(1);
+            $table->unsignedBigInteger('id_intercambio')->nullable();
             $table->timestamps();
 
             $table->foreign('id_usuario')->references('id')->on('users');
-            $table->foreign('id_juego')->references('id')->on('juegos');
+            $table->foreign('id_juego')->references('id')->on('juegos');           
+            $table->foreign('id_intercambio')->references('id')->on('intercambios');
         });
     }
 
