@@ -40,7 +40,8 @@
 
                         <div class="mt-4 d-grid gap-2">
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="{{ route('pedidos.index') }}" class="btn btn-info">{{ __('Ver Historial de Pedidos') }}</a>    
+                                <a href="{{ route('pedidos.index') }}" class="btn btn-info">{{ __('Ver Historial de Pedidos') }}</a>
+                                <a href="{{ route('usuario.intercambios') }}" class="btn btn-info">{{ __('Ver Historial de intercambios') }}</a>        
                                 <a href="{{ route('profile.edit', $user->id) }}" class="btn btn-secondary">{{ __('Editar Perfil') }}</a>
                                 <a class="btn btn-info" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();

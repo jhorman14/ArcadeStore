@@ -6,8 +6,9 @@
 <div class="dashboard">
     <div class="sidebar">
         <div class="search-bar">
-            <input type="text" id="search-term" placeholder="Buscar...">
+            <input type="text" id="search-term" placeholder="Buscar juegos..." value="{{ request('q') }}">
             <button onclick="buscarGratis()">Buscar</button>
+            <button onclick="limpiarBusquedaGratis()" id="clear-search" style="display: none;">Limpiar</button>
         </div>
 
         <div class="filter-group">
@@ -38,11 +39,38 @@
                             <a href="{{ route('tienda.show', $juego->id) }}">
                                 <button>Ver Detalles</button>
                             </a>
-                            {{-- Aquí podrías agregar un botón para reclamar el juego si es necesario --}}
                         </div>
                     @endforeach
                 </div>
-                {{ $juegosGratis->links() }}
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
+                        Mostrando {{ $juegosGratis->firstItem() }} a {{ $juegosGratis->lastItem() }} de {{ $juegosGratis->total() }} registros
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {{-- Botón de Anterior --}}
+                            <li class="page-item {{ $juegosGratis->onFirstPage() ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ $juegosGratis->previousPageUrl() }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+    
+                            {{-- Números de Página --}}
+                            @for ($i = 1; $i <= $juegosGratis->lastPage(); $i++)
+                                <li class="page-item {{ $juegosGratis->currentPage() == $i ? 'active' : '' }}">
+                                    <a class="page-link" href="{{ $juegosGratis->url($i) }}">{{ $i }}</a>
+                                </li>
+                            @endfor
+    
+                            {{-- Botón de Siguiente --}}
+                            <li class="page-item {{ $juegosGratis->currentPage() == $juegosGratis->lastPage() ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ $juegosGratis->nextPageUrl() }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             @else
                 <p>No hay juegos gratis disponibles en esta categoría.</p>
             @endif
@@ -51,9 +79,18 @@
 </div>
 
 <script>
+    const searchTermInput = document.getElementById('search-term');
+    const clearSearchButton = document.getElementById('clear-search');
+
     function buscarGratis() {
-        const searchTerm = document.getElementById('search-term').value;
+        const searchTerm = searchTermInput.value;
         window.location.href = "{{ route('tienda.juegos-gratis') }}?q=" + searchTerm;
+    }
+
+    function limpiarBusquedaGratis() {
+        searchTermInput.value = '';
+        clearSearchButton.style.display = 'none';
+        window.location.href = "{{ route('tienda.juegos-gratis') }}";
     }
 
     function filtrarGratisPorCategoria() {
@@ -62,5 +99,15 @@
         currentUrl.searchParams.set('categoria', categoriaId);
         window.location.href = currentUrl.toString();
     }
+
+    searchTermInput.addEventListener('input', function() {
+        clearSearchButton.style.display = this.value ? 'inline-block' : 'none';
+    });
+
+    searchTermInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            buscarGratis();
+        }
+    });
 </script>
 @endsection

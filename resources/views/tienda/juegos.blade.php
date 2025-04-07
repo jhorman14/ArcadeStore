@@ -6,8 +6,9 @@
 <div class="dashboard">
     <div class="sidebar">
         <div class="search-bar">
-            <input type="text" id="search-term" placeholder="Buscar...">
+            <input type="text" id="search-term" placeholder="Buscar juegos..." value="{{ request('q') }}">
             <button onclick="buscar()">Buscar</button>
+            <button onclick="limpiarBusqueda()" id="clear-search" style="display: none;">Limpiar</button>
         </div>
 
         <div class="filter-group">
@@ -63,7 +64,35 @@
                         </div>
                     @endforeach
                 </div>
-                {{ $juegos->links() }}
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
+                        Mostrando {{ $juegos->firstItem() }} a {{ $juegos->lastItem() }} de {{ $juegos->total() }} registros
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {{-- Botón de Anterior --}}
+                            <li class="page-item {{ $juegos->onFirstPage() ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ $juegos->previousPageUrl() }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+    
+                            {{-- Números de Página --}}
+                            @for ($i = 1; $i <= $juegos->lastPage(); $i++)
+                                <li class="page-item {{ $juegos->currentPage() == $i ? 'active' : '' }}">
+                                    <a class="page-link" href="{{ $juegos->url($i) }}">{{ $i }}</a>
+                                </li>
+                            @endfor
+    
+                            {{-- Botón de Siguiente --}}
+                            <li class="page-item {{ $juegos->currentPage() == $juegos->lastPage() ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ $juegos->nextPageUrl() }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             @else
                 <p>No hay juegos disponibles en esta categoría.</p>
             @endif
@@ -72,9 +101,18 @@
 </div>
 
 <script>
+    const searchTermInput = document.getElementById('search-term');
+    const clearSearchButton = document.getElementById('clear-search');
+
     function buscar() {
-        const searchTerm = document.getElementById('search-term').value;
+        const searchTerm = searchTermInput.value;
         window.location.href = "{{ route('juegosDisp') }}?q=" + searchTerm;
+    }
+
+    function limpiarBusqueda() {
+        searchTermInput.value = '';
+        clearSearchButton.style.display = 'none';
+        window.location.href = "{{ route('juegosDisp') }}";
     }
 
     function filtrarPorCategoria() {
@@ -83,5 +121,15 @@
         currentUrl.searchParams.set('categoria', categoriaId);
         window.location.href = currentUrl.toString();
     }
+
+    searchTermInput.addEventListener('input', function() {
+        clearSearchButton.style.display = this.value ? 'inline-block' : 'none';
+    });
+
+    searchTermInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            buscar();
+        }
+    });
 </script>
 @endsection

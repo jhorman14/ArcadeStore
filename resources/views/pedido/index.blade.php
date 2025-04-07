@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span id="card_title">
-                            {{ __('Ventas') }}
+                            {{ __('Compras') }}
                         </span>
                         <div class="float-right">
                             <a class="btn btn-primary btn-sm" href="/profile/{id}"> {{ __('Back') }}</a>
