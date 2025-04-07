@@ -60,4 +60,10 @@ class Pedido extends Model
         return $this->hasOne(\App\Models\Pago::class, 'id_pedido', 'id');
     }
 
+    public function intercambio()
+    {
+    return $this->belongsTo(\App\Models\Intercambio::class, 'id_intercambio', 'id');
+    }
+
+
 }

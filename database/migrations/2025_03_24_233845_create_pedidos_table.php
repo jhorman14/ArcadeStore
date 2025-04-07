@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_usuario');
             $table->unsignedBigInteger('id_juego');
             $table->integer('cantidad')->default(1);
-            $table->unsignedBigInteger('id_intercambio')->nullable();
+            $table->unsignedBigInteger('id_intercambio')->nullable()->unique(); // Agregamos unique
             $table->timestamps();
 
             $table->foreign('id_usuario')->references('id')->on('users');

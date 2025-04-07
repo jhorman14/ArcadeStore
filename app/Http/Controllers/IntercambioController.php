@@ -16,89 +16,113 @@ use Illuminate\Support\Facades\Log;
 class IntercambioController extends Controller
 {
     public function solicitarIntercambio(Request $request, Juego $juego_id)
-    {
-        if (!Auth::check()) {
-            return Redirect::route('login')->with('error', 'Debes iniciar sesión para solicitar un intercambio.');
-        }
-
-        $request->validate([
-            'juego_ofrecido_id' => 'required|exists:juegos,id',
-        ]);
-
-        $usuario = Auth::user();
-        $juegoOfrecidoId = $request->input('juego_ofrecido_id');
-        $juegoOfrecido = Juego::findOrFail($juegoOfrecidoId);
-        $juegoSolicitado = Juego::findOrFail($juego_id->id);
-
-        if (!$usuario->juegosComprados()->where('juegos.id', $juegoOfrecidoId)->exists()) {
-            return Redirect::back()->with('error', 'El juego ofrecido no pertenece a tu biblioteca.');
-        }
-
-        if (!$juegoSolicitado) {
-            return Redirect::back()->with('error', 'El juego solicitado no existe.');
-        }
-
-        if ($juego_id->id === $juegoOfrecido->id) {
-            return Redirect::back()->with('error', 'No puedes intercambiar el mismo juego por sí mismo.');
-        }
-
-        $precioSolicitado = $juego_id->precio;
-        $precioOfrecido = $juegoOfrecido->precio;
-        $costoAdicional = 0;
-
-        if ($precioSolicitado > $precioOfrecido) {
-            $costoAdicional = ($precioSolicitado - $precioOfrecido) * 1.20;
-        } elseif ($precioSolicitado == $precioOfrecido) {
-            $costoAdicional = $precioSolicitado * 0.20;
-        }
-
-        DB::beginTransaction();
-
-        try {
-            // Crear el intercambio con estado inicial
-            $intercambio = Intercambio::create([
-                'estado_intercambio' => $costoAdicional > 0 ? 'Pendiente_Pago' : 'Pendiente',
-                'fecha_intercambio' => now()->toDateString(),
-                'id_usuario' => $usuario->id,
-                'id_producto_solicitado' => $juego_id->id,
-                'id_producto_ofrecido' => $juegoOfrecido->id,
-                'costo_adicional' => $costoAdicional
-            ]);
-
-            if ($costoAdicional > 0) {
-                DB::commit();
-                return Redirect::route('intercambio.pendiente-pago', $intercambio)
-                    ->with('mensaje', 'Por favor, complete el pago adicional para finalizar el intercambio.');
-            } else {
-                // Procesar intercambio directo sin pago
-                $this->completarIntercambio($intercambio);
-                DB::commit();
-                return Redirect::route('usuario.intercambios')
-                    ->with('success', 'Intercambio completado exitosamente.');
-            }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en intercambio: ' . $e->getMessage());
-            return Redirect::back()->with('error', 'Hubo un error al procesar el intercambio.');
-        }
+{
+    if (!Auth::check()) {
+        return Redirect::route('login')->with('error', 'Debes iniciar sesión para solicitar un intercambio.');
     }
 
-    protected function completarIntercambio(Intercambio $intercambio)
-    {
-        $usuario = Auth::user();
-        
+    $request->validate([
+        'juego_ofrecido_id' => 'required|exists:juegos,id',
+    ]);
+
+    $usuario = Auth::user();
+    $juegoOfrecidoId = $request->input('juego_ofrecido_id');
+    $juegoOfrecido = Juego::findOrFail($juegoOfrecidoId);
+    $juegoSolicitado = Juego::findOrFail($juego_id->id);
+
+    if (!$usuario->juegosComprados()->where('juegos.id', $juegoOfrecidoId)->exists()) {
+        return Redirect::back()->with('error', 'El juego ofrecido no pertenece a tu biblioteca.');
+    }
+
+    if (!$juegoSolicitado) {
+        return Redirect::back()->with('error', 'El juego solicitado no existe.');
+    }
+
+    if ($juego_id->id === $juegoOfrecido->id) {
+        return Redirect::back()->with('error', 'No puedes intercambiar el mismo juego por sí mismo.');
+    }
+
+    // Verificar si ya existe un intercambio pendiente para estos juegos
+    $intercambioExistente = Intercambio::where('id_usuario', $usuario->id)
+        ->where('id_producto_solicitado', $juego_id->id)
+        ->where('id_producto_ofrecido', $juegoOfrecido->id)
+        ->whereIn('estado_intercambio', ['Pendiente', 'Pendiente_Pago'])
+        ->first();
+
+    if ($intercambioExistente) {
+        return Redirect::back()->with('error', 'Ya existe una solicitud de intercambio pendiente para estos juegos.');
+    }
+
+    $precioSolicitado = $juego_id->precio;
+    $precioOfrecido = $juegoOfrecido->precio;
+    $costoAdicional = 0;
+
+    if ($precioSolicitado > $precioOfrecido) {
+        $costoAdicional = ($precioSolicitado - $precioOfrecido) * 1.20;
+    } elseif ($precioSolicitado == $precioOfrecido) {
+        $costoAdicional = $precioSolicitado * 0.20;
+    }
+
+    DB::beginTransaction();
+
+    try {
+        // Crear el intercambio con estado inicial
+        $intercambio = new Intercambio();
+        $intercambio->estado_intercambio = $costoAdicional > 0 ? 'Pendiente_Pago' : 'Pendiente';
+        $intercambio->fecha_intercambio = now()->toDateString();
+        $intercambio->id_usuario = $usuario->id;
+        $intercambio->id_producto_solicitado = $juego_id->id;
+        $intercambio->id_producto_ofrecido = $juegoOfrecido->id;
+        $intercambio->costo_adicional = $costoAdicional;
+        $intercambio->save();
+
+        if ($costoAdicional > 0) {
+            DB::commit();
+            return Redirect::route('intercambio.pendiente-pago', $intercambio)
+                ->with('mensaje', 'Por favor, complete el pago adicional para finalizar el intercambio.');
+        } else {
+            // Procesar intercambio directo sin pago
+            $this->completarIntercambio($intercambio);
+            DB::commit();
+            return Redirect::route('usuario.intercambios')
+                ->with('success', 'Intercambio completado exitosamente.');
+        }
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error en intercambio: ' . $e->getMessage());
+        return Redirect::back()->with('error', 'Hubo un error al procesar el intercambio.');
+    }
+}
+
+
+protected function completarIntercambio(Intercambio $intercambio)
+{
+    $usuario = Auth::user();
+    
+    DB::beginTransaction();
+    try {
         // Actualizar estado
         $intercambio->estado_intercambio = 'Completado';
         $intercambio->save();
 
-        // Realizar el intercambio de juegos
-        $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
-        $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado);
+        // Verificar si el usuario ya tiene el juego solicitado
+        if (!$usuario->juegosComprados()->where('juegos.id', $intercambio->id_producto_solicitado)->exists()) {
+            // Realizar el intercambio de juegos
+            $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
+            $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado, ['created_at' => now(), 'updated_at' => now()]);
+        }
 
+        DB::commit();
         return true;
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error en completarIntercambio: ' . $e->getMessage());
+        throw $e;
     }
+}
 
-    public function procesarPagoIntercambio(Request $request, Intercambio $intercambio)
+
+public function procesarPagoIntercambio(Request $request, Intercambio $intercambio)
 {
     Log::info('Iniciando procesarPagoIntercambio para intercambio ID: ' . $intercambio->id);
 
@@ -132,10 +156,10 @@ class IntercambioController extends Controller
         Log::info('Usuario autenticado: ' . $usuario->id);
 
         // Verificar si ya existe un pedido para este intercambio
-        $pedido = Pedido::where('id_intercambio', $intercambio->id)->first();
+        $pedidoExistente = Pedido::where('id_intercambio', $intercambio->id)->first();
         
-        if (!$pedido) {
-            // Crear el pedido solo si no existe
+        if (!$pedidoExistente) {
+            // Crear el pedido
             $pedido = new Pedido();
             $pedido->fecha_pedido = now();
             $pedido->estado_pedido = 'Completado';
@@ -144,46 +168,28 @@ class IntercambioController extends Controller
             $pedido->id_intercambio = $intercambio->id;
             $pedido->save();
             Log::info('Pedido creado con ID: ' . $pedido->id);
-        }
 
-        // Verificar si ya existe un pago para este pedido
-        $pago = Pago::where('id_pedido', $pedido->id)->first();
-        
-        if (!$pago) {
-            // Crear el pago solo si no existe
+            // Crear el pago
             $pago = new Pago();
             $pago->metodo_de_pago = $request->metodo_de_pago;
             $pago->total = $intercambio->costo_adicional;
             $pago->id_pedido = $pedido->id;
+            $pago->id_intercambio = $intercambio->id;
             $pago->save();
             Log::info('Pago creado con ID: ' . $pago->id);
         }
-
-        // Actualizar el estado del intercambio si aún no está completado
-        if ($intercambio->estado_intercambio !== 'Completado') {
-            $intercambio->estado_intercambio = 'Completado';
-            $intercambio->save();
-            Log::info('Estado del intercambio actualizado a Completado');
-
-            // Realizar el intercambio de juegos solo si no se ha hecho antes
-            $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
-            $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado);
+        // Realizar el intercambio de juegos
+        $usuario->juegosComprados()->detach($intercambio->id_producto_ofrecido);
+        // Verificar si el usuario ya tiene el juego solicitado
+        if (!$usuario->juegosComprados()->where('juegos.id', $intercambio->id_producto_solicitado)->exists()) {
+            $usuario->juegosComprados()->attach($intercambio->id_producto_solicitado, ['created_at' => now(), 'updated_at' => now()]);
             Log::info('Juegos intercambiados correctamente');
         }
 
-        // Verificar si ya existe una venta para este pedido
-        $venta = Venta::where('id_pedido', $pedido->id)->first();
-        
-        if (!$venta) {
-            // Crear la venta solo si no existe
-            $venta = Venta::create([
-                'fecha_venta' => now(),
-                'id_usuario' => $usuario->id,
-                'id_juego' => $intercambio->id_producto_solicitado,
-                'id_pedido' => $pedido->id
-            ]);
-            Log::info('Venta creada con ID: ' . $venta->id);
-        }
+        // Actualizar el estado del intercambio
+        $intercambio->estado_intercambio = 'Completado';
+        $intercambio->save();
+        Log::info('Estado del intercambio actualizado a Completado');
 
         DB::commit();
         Log::info('Transacción completada exitosamente');
@@ -201,6 +207,10 @@ class IntercambioController extends Controller
             ->withInput();
     }
 }
+
+
+
+
 
 
 
