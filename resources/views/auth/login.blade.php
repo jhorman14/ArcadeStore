@@ -2,6 +2,12 @@
 <link href="{{ asset('css/style.css') }}" rel="stylesheet" />
 <link href="{{ asset('css/responsive.css') }}" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<title>{{ config('app.name', 'ArcadeStore') }}</title> <link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+
+<link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
 <div class="login-container">
     <img src="images/logo.png" alt="Logo" class="logo">
