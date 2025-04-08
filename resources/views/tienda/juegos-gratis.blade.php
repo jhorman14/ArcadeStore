@@ -42,40 +42,40 @@
                         </div>
                     @endforeach
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
-                        Mostrando {{ $juegosGratis->firstItem() }} a {{ $juegosGratis->lastItem() }} de {{ $juegosGratis->total() }} registros
-                    </div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            {{-- Botón de Anterior --}}
-                            <li class="page-item {{ $juegosGratis->onFirstPage() ? 'disabled' : '' }}">
-                                <a class="page-link" href="{{ $juegosGratis->previousPageUrl() }}" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-    
-                            {{-- Números de Página --}}
-                            @for ($i = 1; $i <= $juegosGratis->lastPage(); $i++)
-                                <li class="page-item {{ $juegosGratis->currentPage() == $i ? 'active' : '' }}">
-                                    <a class="page-link" href="{{ $juegosGratis->url($i) }}">{{ $i }}</a>
-                                </li>
-                            @endfor
-    
-                            {{-- Botón de Siguiente --}}
-                            <li class="page-item {{ $juegosGratis->currentPage() == $juegosGratis->lastPage() ? 'disabled' : '' }}">
-                                <a class="page-link" href="{{ $juegosGratis->nextPageUrl() }}" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
             @else
                 <p>No hay juegos gratis disponibles en esta categoría.</p>
             @endif
         </section>
     </main>
+</div>
+<div class="d-flex justify-content-between align-items-center">
+    <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">
+        Mostrando {{ $juegosGratis->firstItem() }} a {{ $juegosGratis->lastItem() }} de {{ $juegosGratis->total() }} registros
+    </div>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {{-- Botón de Anterior --}}
+            <li class="page-item {{ $juegosGratis->onFirstPage() ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ $juegosGratis->previousPageUrl() }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            {{-- Números de Página --}}
+            @for ($i = 1; $i <= $juegosGratis->lastPage(); $i++)
+                <li class="page-item {{ $juegosGratis->currentPage() == $i ? 'active' : '' }}">
+                    <a class="page-link" href="{{ $juegosGratis->url($i) }}">{{ $i }}</a>
+                </li>
+            @endfor
+
+            {{-- Botón de Siguiente --}}
+            <li class="page-item {{ $juegosGratis->currentPage() == $juegosGratis->lastPage() ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ $juegosGratis->nextPageUrl() }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 </div>
 
 <script>
