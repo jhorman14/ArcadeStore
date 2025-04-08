@@ -8,14 +8,10 @@
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <title>{{ config('app.name', 'ARCADESTORE') }}</title>
+  <title>{{ config('app.name', 'ArcadeStore') }}</title> <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
 
-  <!-- Fonts -->
-  <link rel="dns-prefetch" href="//fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
-  <!-- Scripts -->
-  @vite(['css/cruds.css', 'resources/js/app.js'])
+  <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png"> @vite(['resources/css/app.css', 'resources/js/app.js'])
   <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}" />
 
