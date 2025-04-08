@@ -15,10 +15,10 @@ Juegos
                             {{ __('Juegos') }}
                         </span>
                         <div style="display: flex; align-items: center;"> {{-- Container for the buttons --}}
-                            <a class="btn btn-primary btn-sm mr-2" href="dashboard"> {{ __('Back') }}</a> {{-- Added mr-2 for spacing --}}
-                            <a href="{{ route('juegos.create') }}" class="btn btn-primary btn-sm" data-placement="left">
-                                {{ __('Crear Nuevo') }}
-                            </a>
+                            <div class="float-right">
+                                <a href="{{ route('juegos.create') }}" class="btn btn-primary btn-sm"> {{ __('Crear Nuevo Juego') }}</a>
+                                <a class="btn btn-primary btn-sm" href="{{ route('admin.dashboard') }}"> {{ __('Back') }}</a>
+                            </div>
                         </div>
                     </div>
                 </div>
