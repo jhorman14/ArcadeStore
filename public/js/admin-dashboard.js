@@ -1,22 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
-    function updateStats() {
-        fetch('/api/admin/stats') // Asume que esta es la ruta de la API
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('total-users').textContent = "Total de Usuarios Registrados: " + data.total_users;
-                document.getElementById('total-games-sold').textContent = "Total de Juegos Vendidos: " + data.total_games_sold;
-                // Actualiza el ancho de las barras de progreso
-                document.querySelector('#total-users + .progress-bar .progress').style.width = (data.total_users > 0 ? (data.total_users > 100 ? 100 : data.total_users) : 0) + '%';
-                document.querySelector('#total-games-sold + .progress-bar .progress').style.width = (data.total_games_sold > 0 ? (data.total_games_sold > 100 ? 100 : data.total_games_sold) : 0) + '%';
-            })
-            .catch(error => {
-                console.error('Error fetching stats:', error);
-            });
+function updateDashboardStats() {
+    fetch('/api/admin/stats')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-users').textContent = "Total de Usuarios Registrados: " + data.total_users;
+            document.getElementById('total-games-sold').textContent = "Total de Juegos Vendidos: " + data.total_games_sold;
+            document.getElementById('total-intercambios').textContent = "Total de Intercambios Realizados: " + data.total_intercambios;
+            // Update progress bar widths
+            updateProgressBar('total-users', data.total_users);
+            updateProgressBar('total-games-sold', data.total_games_sold);
+            updateProgressBar('total-intercambios', data.total_intercambios);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function updateProgressBar(elementId, value) {
+    const progressBar = document.querySelector(`#${elementId} + .progress-bar .progress`);
+    if (progressBar) {
+        progressBar.style.width = `${value}%`;
     }
+}
 
-    // Actualiza las estadísticas cada 5 segundos (puedes ajustar el intervalo)
-    setInterval(updateStats, 5000);
+// Update the stats when the page loads
+updateDashboardStats();
 
-    // Llama a updateStats una vez al cargar la página
-    updateStats();
-});
+// Optionally, you can update the stats periodically (e.g., every 5 minutes)
+// setInterval(updateDashboardStats, 300000); // 300000 milliseconds = 5 minutes
