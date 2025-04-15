@@ -24,7 +24,7 @@ class JuegoController extends Controller
         $search = $request->input('search');
         $destacado = $request->input('destacado');
         $activo = $request->input('activo');
-
+        $categorias = Categoria::all();
         $juegos = Juego::with('categoria', 'inventario')
             ->when($search, function ($query, $search) {
                 return $query->where('titulo', 'like', '%' . $search . '%')
@@ -42,7 +42,7 @@ class JuegoController extends Controller
             ->paginate(10)
             ->appends($request->query()); // Keep other query parameters for pagination
 
-        return view('admin.juego.index', compact('juegos'));
+        return view('admin.juego.index', compact('juegos','categorias'));
     }
 
     /**

@@ -16,7 +16,7 @@ Juegos
                         </span>
                         <div style="display: flex; align-items: center;"> {{-- Container for the buttons --}}
                             <div class="float-right">
-                                <a href="{{ route('juegos.create') }}" class="btn btn-primary btn-sm"> {{ __('Crear Nuevo Juego') }}</a>
+                                <a href="#" data-toggle="modal" data-target="#ModalCreate" class="btn btn-primary btn-sm"> {{ __('Crear Nuevo Juego') }}</a>
                                 <a class="btn btn-primary btn-sm" href="{{ route('admin.dashboard') }}"> {{ __('Back') }}</a>
                             </div>
                         </div>
@@ -149,4 +149,6 @@ Juegos
             {{-- End Pagination Section --}}
         </div>
     </div>
-    @endsection
+</div>
+@endsection
+@include('admin.juego.modal.create')
