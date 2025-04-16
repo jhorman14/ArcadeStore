@@ -55,6 +55,7 @@
                                         <th>Usuario</th>
                                         <th>Juego</th>
                                         <th>Pedido</th>
+                                        <th>Precio</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -65,6 +66,7 @@
                                             <td>{{ $venta->fecha_venta }}</td>
                                             <td>{{ $venta->user->name }}</td>
                                             <td>{{ $venta->juego->titulo }}</td>
+                                            <td>{{ $venta->juego->precio }}</td> //
                                             <td>{{ $venta->pedido ? $venta->pedido->id : 'N/A' }}</td>
                                             <td>
                                                 <form action="{{ route('ventas.destroy',$venta->id) }}" method="POST">
@@ -116,4 +118,20 @@
         </div>
         {{-- End Pagination Section --}}
     </div>
+    <script src="../js/jquery-3.5.1.js"></script>
+    <script src="../js/bootstrap.js"></script>
+
+    <!-- datatables JS -->
+    <script type="text/javascript" src="../js/datatables.min.js"></script>    
+
+    <!-- para usar botones en datatables JS -->  
+    <script src="../js/dataTables.buttons.min.js"></script>  
+    <script src="../js/jszip.min.js"></script>    
+    <script src="../js/pdfmake.min.js"></script>    
+    <script src="../js/vfs_fonts.js"></script>
+    <script src="../js/buttons.html5.min.js"></script>
+
+    <!-- código JS propìo-->    
+    <script type="text/javascript" src="../js/main.js"></script>
+
 @endsection

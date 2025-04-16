@@ -21,6 +21,12 @@
                 @else
                     <p class="card-text-ped">Información de Pago no disponible.</p>
                 @endif
+
+                
+                <a href="{{ route('pedido.show', $pedido->id) }}?pdf=1" class="btn btn-outline-primary mb-2" target="_blank">
+                    📄 Descargar comprobante en PDF
+                </a>
+
                 <a href="{{ route('pedidos.index') }}" class="btn btn-primary">Volver a Mis Pedidos</a>
             </div>
         </div>
